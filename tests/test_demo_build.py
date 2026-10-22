@@ -127,7 +127,7 @@ def test_old_demo_paths_redirect_to_first_page(site):
 def test_first_page_has_install_and_demo_link(site):
     """루트 첫 장: 설치 명령 · 샘플 대시보드 링크 · 라이선스 한 줄, 「오픈소스」 0."""
     html = (site / "dist" / "index.html").read_text(encoding="utf-8")
-    assert "uv tool install git+https://github.com/Noah-TaeHwan/blackclip-guardrail" in html
+    assert "uv tool install blackclip-guardrail" in html and "git+https" not in html
     assert "claude plugin install blackclip-guardrail --marketplace Noah-TaeHwan/blackclip-guardrail --scope project" in html
     assert 'href="demo/"' in html and "소스 공개(FSL-1.1-ALv2), 각 버전은 나온 지 2년 뒤 Apache-2.0으로 바뀌어요." in html
     assert "오픈소스" not in html and "<title>BlackClip Guardrail</title>" in html
