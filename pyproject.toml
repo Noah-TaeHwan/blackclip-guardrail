@@ -1,0 +1,53 @@
+[project]
+name = "blackclip-guardrail"
+version = "0.1.0"
+license = "FSL-1.1-ALv2"
+license-files = ["LICENSE"]
+description = "AI와 함께 만든 매매 전략을 실돈 넣기 전에 점검하고, 넣은 뒤에는 백테스트대로 가는지 지켜보는 로컬 엔진(macOS)"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Noah TaeHwan Oh" }]
+keywords = ["trading", "backtest", "guardrail", "binance", "quant", "claude-code"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Natural Language :: Korean",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = [
+    "numpy>=2.0",
+    "pandas>=2.2",
+]
+
+[project.scripts]
+blackclip = "blackclip.cli:main"
+
+[project.urls]
+Homepage = "https://guardrail.blackclip.app"
+Repository = "https://github.com/Noah-TaeHwan/blackclip-guardrail"
+
+[build-system]
+requires = ["hatchling>=1.27"]  # PEP 639 license 표현식
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/blackclip"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/README.md", "/pyproject.toml"]  # 앞 / = 레포 꼭대기만(gitignore 꼴이라 없으면 examples/*/README.md도 들어감). CHANGELOG는 개발 기록이라 뺌
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]

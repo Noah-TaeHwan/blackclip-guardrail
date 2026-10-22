@@ -1,0 +1,15 @@
+# 옛 데모 쪽(지금 빌드에 없음)은 첫 장으로. _redirects는 파일이 있어도 이기므로 별표로 묶지 않는다
+/demo/connect/ / 301
+/demo/connect / 301
+/demo/s/mean_rev_v1/ / 301
+/demo/s/mean_rev_v1 / 301
+/demo/s/mean_rev_v1/retro/ / 301
+/demo/s/mean_rev_v1/retro / 301
+/demo/s/trend_100/ / 301
+/demo/s/trend_100 / 301
+/demo/s/trend_100/retro/ / 301
+/demo/s/trend_100/retro / 301
+/demo/s/trend_1000/ / 301
+/demo/s/trend_1000 / 301
+/demo/s/trend_1000/retro/ / 301
+/demo/s/trend_1000/retro / 301

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#030304">
+<title>trend_10_50 | BlackClip Guardrail</title>
+<style>:root{color-scheme:dark;--studio-color-canvas:#030304;--studio-color-ink:#F4F4F6;--studio-color-muted:#B4B4BE;--studio-color-surface:#111113;--studio-color-surface-2:#1B1B1F;--studio-color-evidence:#93A5FF;--studio-color-evidence-wash:rgb(147 165 255 / .16);--studio-color-evidence-line:rgb(147 165 255 / .50);--studio-color-caution:#F0B45C;--studio-color-control-border:rgb(255 255 255 / .40);--studio-color-hairline-2:rgb(255 255 255 / .12);--studio-color-fill-soft:rgb(255 255 255 / .06);--studio-color-focus:rgb(255 255 255 / .82);--studio-color-selection:rgb(147 165 255 / .32);--studio-font-sans:"Wanted Sans","Apple SD Gothic Neo",system-ui,sans-serif;--studio-font-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--studio-space-1:4px;--studio-space-2:8px;--studio-space-3:12px;--studio-space-4:16px;--studio-space-5:24px;--studio-space-6:32px;--studio-space-7:44px;--studio-radius-chip:6px;--studio-radius-row:12px;--studio-radius-card:16px;--studio-radius-panel:24px;--studio-radius-pill:999px;}
+html, html body{margin:0;background:var(--studio-color-canvas);color:var(--studio-color-ink);font-family:var(--studio-font-sans);font-size:1rem;line-height:1.625;font-variant-numeric:tabular-nums;word-break:keep-all;overflow-wrap:anywhere;hyphens:none;-webkit-tap-highlight-color:transparent}
+[class]{color:inherit;font-family:inherit}
+::selection{background:var(--studio-color-selection)}
+:focus-visible{outline:2px solid var(--studio-color-focus);outline-offset:2px}
+.top{border-bottom:1px solid var(--studio-color-hairline-2)}
+.nav,.wrap{box-sizing:border-box;max-width:1280px;margin:0 auto;padding-left:max(var(--studio-space-4),env(safe-area-inset-left,0px));padding-right:max(var(--studio-space-4),env(safe-area-inset-right,0px))}
+.nav{display:flex;flex-wrap:wrap;align-items:center;gap:var(--studio-space-2);padding-top:var(--studio-space-2);padding-bottom:var(--studio-space-2)}
+.wrap{padding-top:var(--studio-space-5);padding-bottom:var(--studio-space-6)}
+.stack{display:grid;gap:var(--studio-space-4)}
+.brand{margin-right:var(--studio-space-3);color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem;font-weight:600}
+.nav-link{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0 var(--studio-space-3);border-radius:var(--studio-radius-pill);color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem;font-weight:500;text-decoration:none}
+.nav-link[aria-current="page"]{color:var(--studio-color-ink);font-weight:600}
+.panel{container-type:inline-size;display:grid;gap:var(--studio-space-3);min-width:0;padding:var(--studio-space-4);background:var(--studio-color-surface);color:var(--studio-color-ink);border:1px solid var(--studio-color-hairline-2);border-radius:var(--studio-radius-card)}
+.head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--studio-space-1) var(--studio-space-4)}
+.display{margin:0;color:var(--studio-color-ink);font-size:1.5rem;line-height:2rem;font-weight:500;letter-spacing:-0.02em}
+@media (min-width:480px){.display{font-size:1.75rem;line-height:2.25rem}}
+.h2{margin:0;color:var(--studio-color-ink);font-size:1rem;line-height:1.625rem;font-weight:600}
+.sub{margin:0;color:var(--studio-color-muted);font-size:.8125rem;line-height:1.25rem}
+.empty{margin:0;color:var(--studio-color-ink);font-size:1rem;line-height:1.625rem}
+.cmd{justify-self:start;padding:var(--studio-space-1) var(--studio-space-3);border-radius:var(--studio-radius-chip);background:var(--studio-color-surface-2);color:var(--studio-color-ink);font-family:var(--studio-font-mono);font-size:.8125rem;line-height:1.25rem}
+.scroll{min-width:0;overflow-x:auto}
+.tbl{width:100%;min-width:44rem;border-collapse:collapse}
+.tbl-fit{min-width:0}
+.cell{padding:var(--studio-space-2) var(--studio-space-3);border-bottom:1px solid var(--studio-color-hairline-2);color:var(--studio-color-ink);font-size:.8125rem;line-height:1.25rem;font-weight:400;text-align:left;vertical-align:middle}
+.cell-head{background:var(--studio-color-surface-2);color:var(--studio-color-muted);font-weight:500;white-space:nowrap}
+.cell-num{text-align:right;white-space:nowrap}
+.cell-name,.item-name{color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem;font-weight:500}
+.cell-name{white-space:nowrap}
+.row:hover .cell{background:var(--studio-color-fill-soft)}
+.link{color:var(--studio-color-ink);text-decoration:underline;text-decoration-color:var(--studio-color-muted);text-decoration-thickness:1px;text-underline-offset:4px}
+.link:hover{text-decoration-color:var(--studio-color-ink)}
+.hit{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}
+.actions{display:flex;flex-wrap:wrap;gap:var(--studio-space-2)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 var(--studio-space-4);border-radius:var(--studio-radius-pill);color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem;font-weight:500;text-decoration:none;white-space:nowrap}
+.btn-fill{background:var(--studio-color-ink);color:var(--studio-color-canvas)}
+.btn-quiet{background:var(--studio-color-fill-soft);box-shadow:inset 0 0 0 1px var(--studio-color-control-border)}
+.chip{display:inline-flex;align-items:center;justify-content:center;gap:4px;box-sizing:border-box;min-width:3.75rem;height:1.25rem;padding:0 7px 0 6px;border-radius:var(--studio-radius-chip);background:var(--studio-color-surface-2);box-shadow:inset 0 0 0 1px var(--studio-color-control-border);color:var(--studio-color-ink);font-size:.75rem;line-height:1.25rem;font-weight:500;white-space:nowrap;vertical-align:1px}
+.chip-glyph{flex:none;width:.625rem;height:.625rem}
+.chip-ok{color:var(--studio-color-ink)}
+.chip-warn{color:var(--studio-color-caution);box-shadow:inset 0 0 0 2px var(--studio-color-caution)}
+.chip-mute{color:var(--studio-color-muted)}
+.why{margin:var(--studio-space-1) 0 0;color:var(--studio-color-muted);font-size:.8125rem;line-height:1.25rem}
+.why-warn{color:var(--studio-color-caution)}
+.meter{position:relative;box-sizing:border-box;height:8px;overflow:hidden;border:1px solid var(--studio-color-control-border);border-radius:var(--studio-radius-pill);background:var(--studio-color-surface-2)}
+.meter-fill{position:absolute;inset:0;background:var(--studio-color-ink);transform:scaleX(var(--fill,0));transform-origin:left center}
+.quote{margin:0;padding:var(--studio-space-3) var(--studio-space-4);border-radius:var(--studio-radius-card);background:var(--studio-color-surface-2);color:var(--studio-color-ink);font-size:1rem;line-height:1.625rem;white-space:pre-wrap}
+.keep{white-space:pre-wrap}
+.list{display:grid;gap:var(--studio-space-3);margin:0;padding:0;list-style:none;color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem}
+.rows{display:grid;margin:0;padding:0;list-style:none}
+.item{display:grid;gap:var(--studio-space-2);padding:var(--studio-space-3) 0;border-bottom:1px solid var(--studio-color-hairline-2);color:var(--studio-color-ink);font-size:.8125rem;line-height:1.25rem}
+.item:last-child{border-bottom:0}
+.item .why{margin:0}
+.item-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--studio-space-1) var(--studio-space-3)}
+.item-tail{display:flex;flex-wrap:wrap;align-items:center;gap:var(--studio-space-1) var(--studio-space-4);color:var(--studio-color-muted)}
+.pairs{display:grid;grid-template-columns:repeat(auto-fit,minmax(6rem,1fr));gap:var(--studio-space-2) var(--studio-space-3);margin:0}
+.pairs dt{color:var(--studio-color-muted)}
+.pairs dd{margin:0;color:var(--studio-color-ink)}
+.nw{white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:var(--studio-space-2) var(--studio-space-4);margin:0;padding:0;list-style:none;color:var(--studio-color-muted);font-size:.8125rem;line-height:1.25rem}
+.legend-item{display:inline-flex;align-items:center;gap:var(--studio-space-2)}
+.sw{flex:none;width:28px;height:12px}
+.g2{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--studio-space-3)}
+@media (min-width:1024px){.g2{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}.g2.eq{grid-template-columns:repeat(2,minmax(0,1fr))}.g2.by{grid-template-areas:"cn wn" "nt nt" "cd wd"}.g2.by>:nth-child(1){grid-area:cn}.g2.by>:nth-child(2){grid-area:nt}.g2.by>:nth-child(3){grid-area:cd}.g2.by>:nth-child(4){grid-area:wn}.g2.by>:nth-child(5){grid-area:wd}}
+.chart{display:block;width:100%;height:auto;min-height:180px;overflow:visible}
+.fig{display:grid;grid-template-columns:3.5rem minmax(0,1fr);column-gap:var(--studio-space-2);color:var(--studio-color-muted);font-size:.8125rem;line-height:1.25rem;container-type:inline-size}
+.yax{position:relative;min-width:0}
+.tick{position:absolute;right:0;transform:translateY(-50%);color:var(--studio-color-muted);white-space:nowrap}
+.xax{grid-column:2;display:flex;justify-content:space-between;padding-top:var(--studio-space-1);color:var(--studio-color-muted)}
+.e-dots-off{display:none;grid-column:2;margin:0;padding-top:var(--studio-space-1)}
+.spark{display:block}
+.spark-bar{fill:var(--studio-color-ink)}
+.spark-warn{fill:var(--studio-color-caution)}
+.spark-gap{fill:var(--studio-color-muted)}
+.s-band,.s-bt,.s-actual,.s-line,.s-mean,.s-run,.s-zero,.s-start,.s-count,.s-dot,.s-missed{vector-effect:non-scaling-stroke}
+.s-band{fill:var(--studio-color-evidence-wash);stroke:var(--studio-color-evidence);stroke-width:1}
+.s-bt{fill:none;stroke:var(--studio-color-evidence);stroke-width:2;stroke-dasharray:6 4}
+.s-actual{fill:none;stroke:var(--studio-color-ink);stroke-width:2}
+.s-line{fill:none;stroke:var(--studio-color-caution);stroke-width:1.5;stroke-dasharray:2 3}
+.s-mean{fill:none;stroke:var(--studio-color-evidence);stroke-width:1.5;stroke-dasharray:6 4}
+.s-run{fill:none;stroke:var(--studio-color-ink);stroke-width:1.5}
+.s-zero{fill:none;stroke:var(--studio-color-control-border);stroke-width:1;stroke-dasharray:4 4}
+.s-start{fill:none;stroke:var(--studio-color-muted);stroke-width:1;stroke-dasharray:2 3}
+.s-count{fill:none;stroke:var(--studio-color-muted);stroke-width:1;stroke-dasharray:4 3}
+.s-dot{fill:none;stroke:var(--studio-color-ink);stroke-width:6;stroke-linecap:round}
+@supports (width:1cqw){.s-dot{stroke-width:clamp(3px, calc((100cqw - 3.5rem - var(--studio-space-2)) * 708 / 720 * .8 / var(--gaps, 1)), 6px)}}
+.s-missed{fill:none;stroke:var(--studio-color-caution);stroke-width:10;stroke-linecap:round}
+.lesson{margin:0;color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem}
+.g2.eq>.panel{align-content:start}
+.fig>.legend{grid-column:1/-1;margin-top:var(--studio-space-4)}
+.s-slow-sw{fill:var(--studio-color-muted);fill-opacity:.55}
+.s-slow{fill:url(#b-hatch)}
+.s-fast{fill:var(--studio-color-caution);fill-opacity:.55}
+.s-hatch{fill:none;stroke:var(--studio-color-canvas);stroke-width:1.5}
+@media (max-width:1023.98px){.wide:not(.cq){display:none}}
+@media (min-width:1024px){.narrow:not(.cq){display:none}}
+@container (width < 48rem){.cq.wide{display:none}}
+@container (width >= 48rem){.cq.narrow{display:none}}
+@container (width < 16rem){.wide:not(.cq){display:none}.narrow:not(.cq){display:grid}}
+@container (width >= calc(12rem + 12px)){.span2{grid-column:span 2}}
+@container (width < 9rem){.nw{white-space:normal}}
+.form{display:grid;gap:var(--studio-space-3);margin:0}
+.field{display:grid;gap:var(--studio-space-1);min-width:0}
+.label{color:var(--studio-color-muted);font-size:.8125rem;line-height:1.25rem}
+.input{box-sizing:border-box;width:100%;height:44px;margin:0;padding:0 var(--studio-space-3);border:0;border-radius:var(--studio-radius-row);background:var(--studio-color-surface-2);box-shadow:inset 0 0 0 1px var(--studio-color-control-border);color:var(--studio-color-ink);font-size:1rem;line-height:1.625rem}
+.set{display:grid;gap:var(--studio-space-2);min-width:0;margin:0;padding:0;border:0}
+.set>.h2{padding:0;margin-bottom:var(--studio-space-1)}
+.opt{display:flex;align-items:center;gap:var(--studio-space-3);box-sizing:border-box;min-height:44px;padding:var(--studio-space-2) var(--studio-space-3);border-radius:var(--studio-radius-row);box-shadow:inset 0 0 0 1px var(--studio-color-control-border);color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem}
+.opt input{flex:none;width:1.125rem;height:1.125rem;margin:0;accent-color:var(--studio-color-ink)}
+button.btn{justify-self:start;border:0;cursor:pointer}
+.fail{margin:0;color:var(--studio-color-ink);font-size:.8125rem;line-height:1.25rem;font-weight:500}
+.fail:empty{display:none}
+</style>
+</head>
+<body>
+<header class="top"><nav class="nav" aria-label="화면 이동"><span class="brand">BlackClip Guardrail</span><a class="nav-link" href="/?t=TOKEN">홈</a><span class="nav-link">trend_10_50</span><a class="nav-link" href="/s/trend_10_50?t=TOKEN" aria-current="page">가드레일</a><a class="nav-link" href="/s/trend_10_50/retro?t=TOKEN">회고</a><a class="nav-link" href="/connect?t=TOKEN">연결</a></nav></header>
+<main class="wrap stack">
+<div class="head"><h1 class="display">trend_10_50</h1><span class="chip chip-warn"><svg class="chip-glyph" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><rect x="1" y="1" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="5" r="1.5" fill="currentColor"/></svg>경고</span></div><section class="panel"><p class="why why-warn">실행 문제로 추정</p><p class="sub">적어 둔 대응</p><blockquote class="quote">주문 코드부터 확인. 전략은 그대로 둔다</blockquote><p class="sub keep">실전 시작 2026-09-23  실전 22일째  거래 37건  가드레일 v1  기준 2026-10-14</p></section>
+<div class="g2"><section class="panel"><h2 class="h2">지금 위험한가</h2><p class="sub">실제 손익과 같은 기간 백테스트, 경고선을 정상 범위와 함께 봐요.</p><div class="fig"><div class="yax" aria-hidden="true"><span class="tick" style="top:79.69%">-5%</span><span class="tick" style="top:49.20%">0%</span><span class="tick" style="top:18.71%">+5%</span></div><svg class="chart" role="img" aria-label="실전 2026-09-23부터 2026-10-14까지 실제 손익(-3.6%)과 같은 기간 백테스트(-2.2%)를 그린 차트예요." viewBox="0 0 720 240" preserveAspectRatio="none"><polygon class="s-band" points="6.0,96.4 39.7,87.5 73.4,80.6 107.1,74.8 140.9,69.7 174.6,65.1 208.3,60.8 242.0,56.9 275.7,53.1 309.4,49.6 343.1,46.3 376.9,43.1 410.6,40.0 444.3,37.1 444.3,155.1 410.6,153.7 376.9,152.3 343.1,150.9 309.4,149.3 275.7,147.7 242.0,146.0 208.3,144.2 174.6,142.3 140.9,140.2 107.1,137.8 73.4,135.2 39.7,132.1 6.0,128.0"/><polygon class="s-band" points="478.0,34.2 511.7,31.5 545.4,28.8 579.1,26.2 612.9,23.7 646.6,21.3 680.3,18.9 714.0,16.6 714.0,164.4 680.3,163.4 646.6,162.3 612.9,161.2 579.1,160.0 545.4,158.8 511.7,157.6 478.0,156.4"/><line class="s-zero" x1="6" y1="118.1" x2="714" y2="118.1"/><line class="s-start" x1="478.0" y1="0" x2="478.0" y2="240"/><polyline class="s-line" points="6.0,223.4 39.7,223.4 73.4,223.4 107.1,223.4 140.9,223.4 174.6,223.4 208.3,223.4 242.0,223.4 275.7,223.4 309.4,223.4 343.1,223.4 376.9,223.4 410.6,223.4 444.3,223.4"/><polyline class="s-line" points="478.0,223.4 511.7,223.4 545.4,223.4 579.1,223.4 612.9,223.4 646.6,223.4 680.3,223.4 714.0,223.4"/><polyline class="s-bt" points="6.0,111.8 39.7,111.4 73.4,125.7 107.1,110.6 140.9,110.2 174.6,124.5 208.3,124.1 242.0,123.7 275.7,123.3 309.4,122.9 343.1,122.5 376.9,136.7 410.6,121.7 444.3,135.9"/><polyline class="s-bt" points="478.0,123.9 511.7,123.7 545.4,123.5 579.1,123.3 612.9,123.1 646.6,137.5 680.3,151.2 714.0,151.0"/><polyline class="s-actual" points="6.0,112.2 39.7,112.2 73.4,126.9 107.1,112.2 140.9,112.2 174.6,126.9 208.3,126.9 242.0,126.9 275.7,126.9 309.4,126.9 343.1,126.9 376.9,141.5 410.6,126.9 444.3,141.5"/><polyline class="s-actual" points="478.0,126.9 511.7,126.9 545.4,126.9 579.1,126.9 612.9,126.9 646.6,141.5 680.3,170.8 714.0,170.8"/><path class="s-missed" d="M680.3 170.8h0"/></svg><div class="xax" aria-hidden="true"><span>2026-09-23</span><span>2026-10-14</span></div></div><ul class="legend" aria-label="범례"><li class="legend-item"><svg class="sw" viewBox="0 0 28 12" aria-hidden="true" focusable="false"><rect class="s-band" x="1" y="1" width="26" height="10"/></svg><span>오늘(8일째) 정상 범위 -3.2%~+6.9%</span></li><li class="legend-item"><span>30일 범위 -3.7%~+8.1%</span></li><li class="legend-item"><svg class="sw" viewBox="0 0 28 12" aria-hidden="true" focusable="false"><line class="s-bt" x1="1" y1="6" x2="27" y2="6"/></svg><span>같은 기간 백테스트 -2.2% 범위 안</span></li><li class="legend-item"><svg class="sw" viewBox="0 0 28 12" aria-hidden="true" focusable="false"><line class="s-actual" x1="1" y1="6" x2="27" y2="6"/></svg><span>실제 -3.6% 범위 아래</span></li><li class="legend-item"><svg class="sw" viewBox="0 0 28 12" aria-hidden="true" focusable="false"><line class="s-line" x1="1" y1="6" x2="27" y2="6"/></svg><span>경고선 -7.2%까지 2.6%p 남았어요</span></li><li class="legend-item"><svg class="sw" viewBox="0 0 28 12" aria-hidden="true" focusable="false"><path class="s-missed" d="M14 6h0"/></svg><span>놓친 주문 1건</span></li></ul></section><section class="panel"><h2 class="h2">어디서 생긴 문제예요?</h2><p class="sub">전략이 망가졌는지, 실행에서 새는지, 봇이 멈췄는지 따로 봐요.</p><div class="scroll wide" role="region" aria-label="원인 셋 표" tabindex="0"><table class="tbl tbl-fit"><thead><tr><th scope="col" class="cell cell-head">원인</th><th scope="col" class="cell cell-head">상태</th><th scope="col" class="cell cell-head">근거</th></tr></thead><tbody><tr class="row"><th scope="row" class="cell cell-name">전략이 망가졌나</th><td class="cell"><span class="chip chip-mute"><svg class="chip-glyph" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><rect x="0.5" y="0.5" width="9" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="1"/><rect x="0.5" y="5" width="9" height="4.5" fill="currentColor"/></svg>판단 보류</span></td><td class="cell">같은 기간 백테스트 -2.2%가 정상 범위 안이에요. 엣지가 없어도 이 범위에 들어올 확률이 79%라 거래가 더 쌓여야 판단할 수 있어요.</td></tr><tr class="row"><th scope="row" class="cell cell-name">실행에서 새나</th><td class="cell"><span class="chip chip-warn"><svg class="chip-glyph" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><rect x="1" y="1" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="5" r="1.5" fill="currentColor"/></svg>경고</span></td><td class="cell">실제와 비용 0 같은 기간 백테스트의 차이는 -1.4%p예요. 백테스트에만 있는 거래 1건이 놓친 주문으로 추정돼요. 체결가 차이 중앙값 -5.3bp, 최대 -9.1bp예요.</td></tr><tr class="row"><th scope="row" class="cell cell-name">봇이 멈췄나</th><td class="cell"><span class="chip chip-ok"><svg class="chip-glyph" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="5"/><path d="M3.6 6.2l1.6 1.5 3.1-3.3"/></svg>정상</span></td><td class="cell">최근 7일 거래는 11건이고 백테스트 기준은 7~17건이에요.</td></tr></tbody></table></div><ul class="rows narrow" aria-label="원인 셋 목록"><li class="item"><div class="item-head"><span class="item-name">전략이 망가졌나</span><span class="chip chip-mute"><svg class="chip-glyph" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><rect x="0.5" y="0.5" width="9" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="1"/><rect x="0.5" y="5" width="9" height="4.5" fill="currentColor"/></svg>판단 보류</span></div><div class="why">같은 기간 백테스트 -2.2%가 정상 범위 안이에요. 엣지가 없어도 이 범위에 들어올 확률이 79%라 거래가 더 쌓여야 판단할 수 있어요.</div></li><li class="item"><div class="item-head"><span class="item-name">실행에서 새나</span><span class="chip chip-warn"><svg class="chip-glyph" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><rect x="1" y="1" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="5" r="1.5" fill="currentColor"/></svg>경고</span></div><div class="why">실제와 비용 0 같은 기간 백테스트의 차이는 -1.4%p예요. 백테스트에만 있는 거래 1건이 놓친 주문으로 추정돼요. 체결가 차이 중앙값 -5.3bp, 최대 -9.1bp예요.</div></li><li class="item"><div class="item-head"><span class="item-name">봇이 멈췄나</span><span class="chip chip-ok"><svg class="chip-glyph" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="5"/><path d="M3.6 6.2l1.6 1.5 3.1-3.3"/></svg>정상</span></div><div class="why">최근 7일 거래는 11건이고 백테스트 기준은 7~17건이에요.</div></li></ul></section></div>
+<section class="panel"><h2 class="h2">거래 단위로 보기</h2><p class="sub">전략이 망가졌는지 날짜가 아니라 거래 수로 봐요.</p><div class="g2"><div class="stack"><style>@container (width < calc(3.5rem + 8px + 138px)){#e1 .s-dot{display:none} #e1 .e-dots-off{display:block} #e1 .legend-item:first-child{display:none}}</style><div class="fig" id="e1"><div class="yax" aria-hidden="true"><span class="tick" style="top:93.62%">-5%</span><span class="tick" style="top:50.26%">0%</span><span class="tick" style="top:6.90%">+5%</span></div><svg class="chart" role="img" aria-label="거래 37건의 실제 수익과 누적 평균을 그린 차트예요." viewBox="0 0 720 240" preserveAspectRatio="none" style="--gaps:36"><rect class="s-band" x="6" y="16.6" width="708" height="187.3"/><line class="s-zero" x1="6" x2="714" y1="120.6" y2="120.6"/><line class="s-mean" x1="6" x2="714" y1="115.0" y2="115.0"/><line class="s-count" x1="576.3" y1="0" x2="576.3" y2="240"/><polyline class="s-run" points="6.0,68.6 25.7,131.0 45.3,110.2 65.0,131.0 84.7,118.5 104.3,131.0 124.0,122.1 143.7,131.0 163.3,124.1 183.0,131.0 202.7,125.4 222.3,131.0 242.0,126.2 261.7,131.0 281.3,126.9 301.0,131.0 320.7,127.4 340.3,131.0 360.0,127.7 379.7,131.0 399.3,128.1 419.0,131.0 438.7,128.3 458.3,131.0 478.0,128.5 497.7,131.0 517.3,128.7 537.0,131.0 556.7,128.9 576.3,131.0 596.0,129.0 615.7,131.0 635.3,129.1 655.0,131.0 674.7,129.2 694.3,131.0 714.0,133.5"/><path class="s-dot" d="M6.0 68.6h0"/><path class="s-dot" d="M25.7 193.5h0"/><path class="s-dot" d="M45.3 68.6h0"/><path class="s-dot" d="M65.0 193.5h0"/><path class="s-dot" d="M84.7 68.6h0"/><path class="s-dot" d="M104.3 193.5h0"/><path class="s-dot" d="M124.0 68.6h0"/><path class="s-dot" d="M143.7 193.5h0"/><path class="s-dot" d="M163.3 68.6h0"/><path class="s-dot" d="M183.0 193.5h0"/><path class="s-dot" d="M202.7 68.6h0"/><path class="s-dot" d="M222.3 193.5h0"/><path class="s-dot" d="M242.0 68.6h0"/><path class="s-dot" d="M261.7 193.5h0"/><path class="s-dot" d="M281.3 68.6h0"/><path class="s-dot" d="M301.0 193.5h0"/><path class="s-dot" d="M320.7 68.6h0"/><path class="s-dot" d="M340.3 193.5h0"/><path class="s-dot" d="M360.0 68.6h0"/><path class="s-dot" d="M379.7 193.5h0"/><path class="s-dot" d="M399.3 68.6h0"/><path class="s-dot" d="M419.0 193.5h0"/><path class="s-dot" d="M438.7 68.6h0"/><path class="s-dot" d="M458.3 193.5h0"/><path class="s-dot" d="M478.0 68.6h0"/><path class="s-dot" d="M497.7 193.5h0"/><path class="s-dot" d="M517.3 68.6h0"/><path class="s-dot" d="M537.0 193.5h0"/><path class="s-dot" d="M556.7 68.6h0"/><path class="s-dot" d="M576.3 193.5h0"/><path class="s-dot" d="M596.0 68.6h0"/><path class="s-dot" d="M615.7 193.5h0"/><path class="s-dot" d="M635.3 68.6h0"/><path class="s-dot" d="M655.0 193.5h0"/><path class="s-dot" d="M674.7 68.6h0"/><path class="s-dot" d="M694.3 193.5h0"/><path class="s-dot" d="M714.0 223.4h0"/></svg><div class="xax" aria-hidden="true"><span>1번째 거래</span><span>37번째 거래</span></div><p class="e-dots-off">점이 겹치지 않게 이 폭에서는 점은 빼고 누적 평균 선만 그렸어요.</p><ul class="legend" aria-label="범례"><li class="legend-item"><svg class="sw" viewBox="0 0 28 12" aria-hidden="true" focusable="false"><path class="s-dot" d="M14 6h0"/></svg><span>실제 거래 1건</span></li><li class="legend-item"><svg class="sw" viewBox="0 0 28 12" aria-hidden="true" focusable="false"><line class="s-run" x1="1" y1="6" x2="27" y2="6"/></svg><span>실제 누적 평균</span></li><li class="legend-item"><svg class="sw" viewBox="0 0 28 12" aria-hidden="true" focusable="false"><rect class="s-band" x="1" y="1" width="26" height="10"/></svg><span>백테스트 거래 가운데 80%</span></li><li class="legend-item"><svg class="sw" viewBox="0 0 28 12" aria-hidden="true" focusable="false"><line class="s-mean" x1="1" y1="6" x2="27" y2="6"/></svg><span>백테스트 평균</span></li><li class="legend-item"><svg class="sw" viewBox="0 0 28 12" aria-hidden="true" focusable="false"><line class="s-count" x1="14" y1="0" x2="14" y2="12"/></svg><span>30건 선</span></li></ul></div></div><ul class="list"><li>거래 37건으로 판단 기준 30건을 넘었어요<div class="meter" aria-hidden="true"><div class="meter-fill" style="--fill:1.000"></div></div></li><li class="keep">거래 1건 평균 실제 -0.62%  백테스트 +0.27%</li><li>엣지가 없어도 이 범위에 들어올 확률 79%</li><li>최근 7일 거래 11건(백테스트 기준 7~17건)</li><li>청산 37건, 수익 표본 37건, 그린 표본 37건이고 점과 실제 평균은 그린 표본 37건으로 냈어요.</li></ul></div></section>
+<section class="panel"><h2 class="h2">가드레일 v1(실돈 넣기 전에 정한 기준)</h2><div class="scroll wide" role="region" aria-label="가드레일 기준 표" tabindex="0"><table class="tbl tbl-fit"><thead><tr><th scope="col" class="cell cell-head">기준</th><th scope="col" class="cell cell-head">정한 값</th></tr></thead><tbody><tr class="row"><th scope="row" class="cell cell-name">정상 범위</th><td class="cell">30일 범위 -3.7%~+8.1%</td></tr><tr class="row"><th scope="row" class="cell cell-name">경고선</th><td class="cell">-7.2%, 민감도 민감</td></tr><tr class="row"><th scope="row" class="cell cell-name">판단 보류</th><td class="cell">거래 30건 전이거나 엣지가 없어도 범위 안일 확률이 50% 이상이면 판단 보류예요.</td></tr><tr class="row"><th scope="row" class="cell cell-name">시도 수 보정</th><td class="cell">시도 수 보정은 정상 범위에 넣지 않고 판단 보류 옆에 숫자로만 적어요. 판단 보류 계산에는 아직 쓰지 않아요.</td></tr></tbody></table></div><ul class="rows narrow" aria-label="가드레일 기준 목록"><li class="item"><div class="item-head"><span class="item-name">정상 범위</span></div><div>30일 범위 -3.7%~+8.1%</div></li><li class="item"><div class="item-head"><span class="item-name">경고선</span></div><div>-7.2%, 민감도 민감</div></li><li class="item"><div class="item-head"><span class="item-name">판단 보류</span></div><div>거래 30건 전이거나 엣지가 없어도 범위 안일 확률이 50% 이상이면 판단 보류예요.</div></li><li class="item"><div class="item-head"><span class="item-name">시도 수 보정</span></div><div>시도 수 보정은 정상 범위에 넣지 않고 판단 보류 옆에 숫자로만 적어요. 판단 보류 계산에는 아직 쓰지 않아요.</div></li></ul></section>
+<section class="panel"><h2 class="h2">대응(가드레일에 적어 둔 것)</h2><p class="sub">실행 경고</p><blockquote class="quote">주문 코드부터 확인. 전략은 그대로 둔다</blockquote><p class="sub">경고선</p><p class="sub">아직 안 걸림</p><blockquote class="quote">중단 검토. 멈출지는 내가 정한다</blockquote><p class="sub">엔진은 주문을 내거나 봇을 멈추지 않아요. 멈출지는 직접 정해요.</p></section>
+</main>
+</body>
+</html>

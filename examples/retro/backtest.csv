@@ -1,0 +1,4 @@
+time,symbol,side,qty,price,fee,order_id,fee_asset
+2026-09-24T06:59:00+00:00,BTCUSDT,sell,0.12,63410,0,bt1,USDT
+2026-10-08T00:31:00+00:00,BTCUSDT,buy,0.12,61020,0,bt2,USDT
+2026-10-13T06:58:00+00:00,BTCUSDT,sell,0.12,62140,0,bt3,USDT

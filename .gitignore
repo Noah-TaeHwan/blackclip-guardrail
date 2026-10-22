@@ -1,0 +1,14 @@
+.blackclip/
+.env
+*.key
+*.pem
+secrets*
+spikes/out/
+__pycache__/
+.venv/
+*.egg-info/
+dist/
+.pt/
+.superpowers/
+.pytest_cache/
+.ruff_cache/

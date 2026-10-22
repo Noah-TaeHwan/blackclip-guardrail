@@ -1,0 +1,9 @@
+{
+  // guardrail.blackclip.app: 첫 장 + 공개 샘플 대시보드(읽기 전용 정적, 샘플 데이터). 소스: blackclip-guardrail 레포 demo/(build.py · sample.py).
+  "name": "blackclip-guardrail-demo",
+  "compatibility_date": "2026-10-06",
+  "preview_urls": false,
+  "workers_dev": true,
+  "routes": [{ "pattern": "guardrail.blackclip.app", "custom_domain": true }],
+  "assets": { "directory": "./dist", "html_handling": "auto-trailing-slash", "not_found_handling": "none" }
+}

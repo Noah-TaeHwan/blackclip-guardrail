@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#030304">
+<title>trend_10_50 회고 | BlackClip Guardrail</title>
+<style>:root{color-scheme:dark;--studio-color-canvas:#030304;--studio-color-ink:#F4F4F6;--studio-color-muted:#B4B4BE;--studio-color-surface:#111113;--studio-color-surface-2:#1B1B1F;--studio-color-evidence:#93A5FF;--studio-color-evidence-wash:rgb(147 165 255 / .16);--studio-color-evidence-line:rgb(147 165 255 / .50);--studio-color-caution:#F0B45C;--studio-color-control-border:rgb(255 255 255 / .40);--studio-color-hairline-2:rgb(255 255 255 / .12);--studio-color-fill-soft:rgb(255 255 255 / .06);--studio-color-focus:rgb(255 255 255 / .82);--studio-color-selection:rgb(147 165 255 / .32);--studio-font-sans:"Wanted Sans","Apple SD Gothic Neo",system-ui,sans-serif;--studio-font-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--studio-space-1:4px;--studio-space-2:8px;--studio-space-3:12px;--studio-space-4:16px;--studio-space-5:24px;--studio-space-6:32px;--studio-space-7:44px;--studio-radius-chip:6px;--studio-radius-row:12px;--studio-radius-card:16px;--studio-radius-panel:24px;--studio-radius-pill:999px;}
+html, html body{margin:0;background:var(--studio-color-canvas);color:var(--studio-color-ink);font-family:var(--studio-font-sans);font-size:1rem;line-height:1.625;font-variant-numeric:tabular-nums;word-break:keep-all;overflow-wrap:anywhere;hyphens:none;-webkit-tap-highlight-color:transparent}
+[class]{color:inherit;font-family:inherit}
+::selection{background:var(--studio-color-selection)}
+:focus-visible{outline:2px solid var(--studio-color-focus);outline-offset:2px}
+.top{border-bottom:1px solid var(--studio-color-hairline-2)}
+.nav,.wrap{box-sizing:border-box;max-width:1280px;margin:0 auto;padding-left:max(var(--studio-space-4),env(safe-area-inset-left,0px));padding-right:max(var(--studio-space-4),env(safe-area-inset-right,0px))}
+.nav{display:flex;flex-wrap:wrap;align-items:center;gap:var(--studio-space-2);padding-top:var(--studio-space-2);padding-bottom:var(--studio-space-2)}
+.wrap{padding-top:var(--studio-space-5);padding-bottom:var(--studio-space-6)}
+.stack{display:grid;gap:var(--studio-space-4)}
+.brand{margin-right:var(--studio-space-3);color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem;font-weight:600}
+.nav-link{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0 var(--studio-space-3);border-radius:var(--studio-radius-pill);color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem;font-weight:500;text-decoration:none}
+.nav-link[aria-current="page"]{color:var(--studio-color-ink);font-weight:600}
+.panel{container-type:inline-size;display:grid;gap:var(--studio-space-3);min-width:0;padding:var(--studio-space-4);background:var(--studio-color-surface);color:var(--studio-color-ink);border:1px solid var(--studio-color-hairline-2);border-radius:var(--studio-radius-card)}
+.head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--studio-space-1) var(--studio-space-4)}
+.display{margin:0;color:var(--studio-color-ink);font-size:1.5rem;line-height:2rem;font-weight:500;letter-spacing:-0.02em}
+@media (min-width:480px){.display{font-size:1.75rem;line-height:2.25rem}}
+.h2{margin:0;color:var(--studio-color-ink);font-size:1rem;line-height:1.625rem;font-weight:600}
+.sub{margin:0;color:var(--studio-color-muted);font-size:.8125rem;line-height:1.25rem}
+.empty{margin:0;color:var(--studio-color-ink);font-size:1rem;line-height:1.625rem}
+.cmd{justify-self:start;padding:var(--studio-space-1) var(--studio-space-3);border-radius:var(--studio-radius-chip);background:var(--studio-color-surface-2);color:var(--studio-color-ink);font-family:var(--studio-font-mono);font-size:.8125rem;line-height:1.25rem}
+.scroll{min-width:0;overflow-x:auto}
+.tbl{width:100%;min-width:44rem;border-collapse:collapse}
+.tbl-fit{min-width:0}
+.cell{padding:var(--studio-space-2) var(--studio-space-3);border-bottom:1px solid var(--studio-color-hairline-2);color:var(--studio-color-ink);font-size:.8125rem;line-height:1.25rem;font-weight:400;text-align:left;vertical-align:middle}
+.cell-head{background:var(--studio-color-surface-2);color:var(--studio-color-muted);font-weight:500;white-space:nowrap}
+.cell-num{text-align:right;white-space:nowrap}
+.cell-name,.item-name{color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem;font-weight:500}
+.cell-name{white-space:nowrap}
+.row:hover .cell{background:var(--studio-color-fill-soft)}
+.link{color:var(--studio-color-ink);text-decoration:underline;text-decoration-color:var(--studio-color-muted);text-decoration-thickness:1px;text-underline-offset:4px}
+.link:hover{text-decoration-color:var(--studio-color-ink)}
+.hit{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}
+.actions{display:flex;flex-wrap:wrap;gap:var(--studio-space-2)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 var(--studio-space-4);border-radius:var(--studio-radius-pill);color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem;font-weight:500;text-decoration:none;white-space:nowrap}
+.btn-fill{background:var(--studio-color-ink);color:var(--studio-color-canvas)}
+.btn-quiet{background:var(--studio-color-fill-soft);box-shadow:inset 0 0 0 1px var(--studio-color-control-border)}
+.chip{display:inline-flex;align-items:center;justify-content:center;gap:4px;box-sizing:border-box;min-width:3.75rem;height:1.25rem;padding:0 7px 0 6px;border-radius:var(--studio-radius-chip);background:var(--studio-color-surface-2);box-shadow:inset 0 0 0 1px var(--studio-color-control-border);color:var(--studio-color-ink);font-size:.75rem;line-height:1.25rem;font-weight:500;white-space:nowrap;vertical-align:1px}
+.chip-glyph{flex:none;width:.625rem;height:.625rem}
+.chip-ok{color:var(--studio-color-ink)}
+.chip-warn{color:var(--studio-color-caution);box-shadow:inset 0 0 0 2px var(--studio-color-caution)}
+.chip-mute{color:var(--studio-color-muted)}
+.why{margin:var(--studio-space-1) 0 0;color:var(--studio-color-muted);font-size:.8125rem;line-height:1.25rem}
+.why-warn{color:var(--studio-color-caution)}
+.meter{position:relative;box-sizing:border-box;height:8px;overflow:hidden;border:1px solid var(--studio-color-control-border);border-radius:var(--studio-radius-pill);background:var(--studio-color-surface-2)}
+.meter-fill{position:absolute;inset:0;background:var(--studio-color-ink);transform:scaleX(var(--fill,0));transform-origin:left center}
+.quote{margin:0;padding:var(--studio-space-3) var(--studio-space-4);border-radius:var(--studio-radius-card);background:var(--studio-color-surface-2);color:var(--studio-color-ink);font-size:1rem;line-height:1.625rem;white-space:pre-wrap}
+.keep{white-space:pre-wrap}
+.list{display:grid;gap:var(--studio-space-3);margin:0;padding:0;list-style:none;color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem}
+.rows{display:grid;margin:0;padding:0;list-style:none}
+.item{display:grid;gap:var(--studio-space-2);padding:var(--studio-space-3) 0;border-bottom:1px solid var(--studio-color-hairline-2);color:var(--studio-color-ink);font-size:.8125rem;line-height:1.25rem}
+.item:last-child{border-bottom:0}
+.item .why{margin:0}
+.item-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--studio-space-1) var(--studio-space-3)}
+.item-tail{display:flex;flex-wrap:wrap;align-items:center;gap:var(--studio-space-1) var(--studio-space-4);color:var(--studio-color-muted)}
+.pairs{display:grid;grid-template-columns:repeat(auto-fit,minmax(6rem,1fr));gap:var(--studio-space-2) var(--studio-space-3);margin:0}
+.pairs dt{color:var(--studio-color-muted)}
+.pairs dd{margin:0;color:var(--studio-color-ink)}
+.nw{white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:var(--studio-space-2) var(--studio-space-4);margin:0;padding:0;list-style:none;color:var(--studio-color-muted);font-size:.8125rem;line-height:1.25rem}
+.legend-item{display:inline-flex;align-items:center;gap:var(--studio-space-2)}
+.sw{flex:none;width:28px;height:12px}
+.g2{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--studio-space-3)}
+@media (min-width:1024px){.g2{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}.g2.eq{grid-template-columns:repeat(2,minmax(0,1fr))}.g2.by{grid-template-areas:"cn wn" "nt nt" "cd wd"}.g2.by>:nth-child(1){grid-area:cn}.g2.by>:nth-child(2){grid-area:nt}.g2.by>:nth-child(3){grid-area:cd}.g2.by>:nth-child(4){grid-area:wn}.g2.by>:nth-child(5){grid-area:wd}}
+.chart{display:block;width:100%;height:auto;min-height:180px;overflow:visible}
+.fig{display:grid;grid-template-columns:3.5rem minmax(0,1fr);column-gap:var(--studio-space-2);color:var(--studio-color-muted);font-size:.8125rem;line-height:1.25rem;container-type:inline-size}
+.yax{position:relative;min-width:0}
+.tick{position:absolute;right:0;transform:translateY(-50%);color:var(--studio-color-muted);white-space:nowrap}
+.xax{grid-column:2;display:flex;justify-content:space-between;padding-top:var(--studio-space-1);color:var(--studio-color-muted)}
+.e-dots-off{display:none;grid-column:2;margin:0;padding-top:var(--studio-space-1)}
+.spark{display:block}
+.spark-bar{fill:var(--studio-color-ink)}
+.spark-warn{fill:var(--studio-color-caution)}
+.spark-gap{fill:var(--studio-color-muted)}
+.s-band,.s-bt,.s-actual,.s-line,.s-mean,.s-run,.s-zero,.s-start,.s-count,.s-dot,.s-missed{vector-effect:non-scaling-stroke}
+.s-band{fill:var(--studio-color-evidence-wash);stroke:var(--studio-color-evidence);stroke-width:1}
+.s-bt{fill:none;stroke:var(--studio-color-evidence);stroke-width:2;stroke-dasharray:6 4}
+.s-actual{fill:none;stroke:var(--studio-color-ink);stroke-width:2}
+.s-line{fill:none;stroke:var(--studio-color-caution);stroke-width:1.5;stroke-dasharray:2 3}
+.s-mean{fill:none;stroke:var(--studio-color-evidence);stroke-width:1.5;stroke-dasharray:6 4}
+.s-run{fill:none;stroke:var(--studio-color-ink);stroke-width:1.5}
+.s-zero{fill:none;stroke:var(--studio-color-control-border);stroke-width:1;stroke-dasharray:4 4}
+.s-start{fill:none;stroke:var(--studio-color-muted);stroke-width:1;stroke-dasharray:2 3}
+.s-count{fill:none;stroke:var(--studio-color-muted);stroke-width:1;stroke-dasharray:4 3}
+.s-dot{fill:none;stroke:var(--studio-color-ink);stroke-width:6;stroke-linecap:round}
+@supports (width:1cqw){.s-dot{stroke-width:clamp(3px, calc((100cqw - 3.5rem - var(--studio-space-2)) * 708 / 720 * .8 / var(--gaps, 1)), 6px)}}
+.s-missed{fill:none;stroke:var(--studio-color-caution);stroke-width:10;stroke-linecap:round}
+.lesson{margin:0;color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem}
+.g2.eq>.panel{align-content:start}
+.fig>.legend{grid-column:1/-1;margin-top:var(--studio-space-4)}
+.s-slow-sw{fill:var(--studio-color-muted);fill-opacity:.55}
+.s-slow{fill:url(#b-hatch)}
+.s-fast{fill:var(--studio-color-caution);fill-opacity:.55}
+.s-hatch{fill:none;stroke:var(--studio-color-canvas);stroke-width:1.5}
+@media (max-width:1023.98px){.wide:not(.cq){display:none}}
+@media (min-width:1024px){.narrow:not(.cq){display:none}}
+@container (width < 48rem){.cq.wide{display:none}}
+@container (width >= 48rem){.cq.narrow{display:none}}
+@container (width < 16rem){.wide:not(.cq){display:none}.narrow:not(.cq){display:grid}}
+@container (width >= calc(12rem + 12px)){.span2{grid-column:span 2}}
+@container (width < 9rem){.nw{white-space:normal}}
+.form{display:grid;gap:var(--studio-space-3);margin:0}
+.field{display:grid;gap:var(--studio-space-1);min-width:0}
+.label{color:var(--studio-color-muted);font-size:.8125rem;line-height:1.25rem}
+.input{box-sizing:border-box;width:100%;height:44px;margin:0;padding:0 var(--studio-space-3);border:0;border-radius:var(--studio-radius-row);background:var(--studio-color-surface-2);box-shadow:inset 0 0 0 1px var(--studio-color-control-border);color:var(--studio-color-ink);font-size:1rem;line-height:1.625rem}
+.set{display:grid;gap:var(--studio-space-2);min-width:0;margin:0;padding:0;border:0}
+.set>.h2{padding:0;margin-bottom:var(--studio-space-1)}
+.opt{display:flex;align-items:center;gap:var(--studio-space-3);box-sizing:border-box;min-height:44px;padding:var(--studio-space-2) var(--studio-space-3);border-radius:var(--studio-radius-row);box-shadow:inset 0 0 0 1px var(--studio-color-control-border);color:var(--studio-color-ink);font-size:.875rem;line-height:1.25rem}
+.opt input{flex:none;width:1.125rem;height:1.125rem;margin:0;accent-color:var(--studio-color-ink)}
+button.btn{justify-self:start;border:0;cursor:pointer}
+.fail{margin:0;color:var(--studio-color-ink);font-size:.8125rem;line-height:1.25rem;font-weight:500}
+.fail:empty{display:none}
+</style>
+</head>
+<body>
+<header class="top"><nav class="nav" aria-label="화면 이동"><span class="brand">BlackClip Guardrail</span><a class="nav-link" href="/?t=TOKEN">홈</a><span class="nav-link">trend_10_50</span><a class="nav-link" href="/s/trend_10_50?t=TOKEN">가드레일</a><a class="nav-link" href="/s/trend_10_50/retro?t=TOKEN" aria-current="page">회고</a><a class="nav-link" href="/connect?t=TOKEN">연결</a></nav></header>
+<main class="wrap stack">
+<div class="head"><h1 class="display">trend_10_50</h1><p class="sub">회고</p></div>
+<div class="g2 eq by"><section class="panel"><h2 class="h2">이번 구간(2026-10-07부터)</h2><dl class="pairs"><div><dt class="sub">같은 기간 백테스트</dt><dd class="display">-2.2%</dd></div><div><dt class="sub">실제</dt><dd class="display">-3.6%</dd></div><div><dt class="sub">차이(비용 0)</dt><dd class="display">-1.4%p</dd></div></dl></section><div class="stack"><p class="sub keep">기준 2026-10-14  실전 22일째  거래 37건</p><p class="sub">차이는 비용을 0으로 둔 같은 기간 백테스트와 비교해요. 같은 기간 백테스트 칸은 보수적 비용 기준이에요.</p></div><section class="panel"><h2 class="h2">차이가 어디서 났나(이번 구간)</h2><p class="sub">이번 구간(2026-10-07부터)</p><ul class="rows"><li class="item"><div class="item-head"><span class="item-name">체결가 차이</span><span>-0.2%p</span></div><div class="meter" aria-hidden="true"><div class="meter-fill" style="--fill:0.190"></div></div><div class="why">체결가 차이 중앙값 -5.3bp, 최대 -9.1bp</div></li><li class="item"><div class="item-head"><span class="item-name">수수료</span><span>-0.1%p</span></div><div class="meter" aria-hidden="true"><div class="meter-fill" style="--fill:0.095"></div></div></li><li class="item"><div class="item-head"><span class="item-name">나머지</span><span>-1.1%p</span></div><div class="meter" aria-hidden="true"><div class="meter-fill" style="--fill:1.000"></div></div><div class="why">(추정, 원인 후보: 백테스트에만 있는 거래 1건)</div></li></ul></section><section class="panel"><h2 class="h2">실전 시작부터(2026-09-23부터)</h2><dl class="pairs"><div><dt class="sub">같은 기간 백테스트</dt><dd class="display">-1.9%</dd></div><div><dt class="sub">실제</dt><dd class="display">-4.6%</dd></div><div><dt class="sub">차이(비용 0)</dt><dd class="display">-2.7%p</dd></div></dl></section><section class="panel"><h2 class="h2">차이가 어디서 났나(실전 시작부터)</h2><p class="sub">실전 시작부터(2026-09-23부터)</p><ul class="rows"><li class="item"><div class="item-head"><span class="item-name">체결가 차이</span><span>-0.4%p</span></div><div class="meter" aria-hidden="true"><div class="meter-fill" style="--fill:0.190"></div></div></li><li class="item"><div class="item-head"><span class="item-name">수수료</span><span>-0.2%p</span></div><div class="meter" aria-hidden="true"><div class="meter-fill" style="--fill:0.095"></div></div></li><li class="item"><div class="item-head"><span class="item-name">나머지</span><span>-2.1%p</span></div><div class="meter" aria-hidden="true"><div class="meter-fill" style="--fill:1.000"></div></div><div class="why">(추정, 원인 후보: 백테스트에만 있는 거래 1건)</div></li></ul></section></div>
+<section class="panel"><h2 class="h2">차이가 쌓인 모습</h2><p class="sub">실제와 비용 0 같은 기간 백테스트의 차이를 날마다 잰 것과 나머지로 나눠 쌓아요.</p><div class="fig"><div class="yax" aria-hidden="true"><span class="tick" style="top:70.75%">-1.0%p</span><span class="tick" style="top:38.83%">-0.5%p</span><span class="tick" style="top:6.90%">0.0%p</span></div><svg class="chart" role="img" aria-label="2026-09-23부터 2026-10-14까지 실제와 비용 0 같은 기간 백테스트의 차이가 어디서 났는지 날마다 쌓아 그린 차트예요." viewBox="0 0 720 240" preserveAspectRatio="none"><defs><pattern id="b-hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect class="s-slow-sw" width="6" height="6"/><line class="s-hatch" x1="0" y1="0" x2="0" y2="6"/></pattern></defs><rect class="s-slow" x="9.2" y="16.6" width="25.7" height="4.2"/><rect class="s-slow" x="41.4" y="16.6" width="25.7" height="8.4"/><rect class="s-slow" x="73.6" y="16.6" width="25.7" height="12.5"/><rect class="s-slow" x="105.8" y="16.6" width="25.7" height="16.7"/><rect class="s-slow" x="137.9" y="16.6" width="25.7" height="20.9"/><rect class="s-slow" x="170.1" y="16.6" width="25.7" height="25.1"/><rect class="s-slow" x="202.3" y="16.6" width="25.7" height="29.3"/><rect class="s-slow" x="234.5" y="16.6" width="25.7" height="33.4"/><rect class="s-slow" x="266.7" y="16.6" width="25.7" height="37.6"/><rect class="s-slow" x="298.9" y="16.6" width="25.7" height="41.8"/><rect class="s-slow" x="331.0" y="16.6" width="25.7" height="46.0"/><rect class="s-slow" x="363.2" y="16.6" width="25.7" height="50.2"/><rect class="s-slow" x="395.4" y="16.6" width="25.7" height="54.3"/><rect class="s-slow" x="427.6" y="16.6" width="25.7" height="58.5"/><rect class="s-slow" x="459.8" y="16.6" width="25.7" height="31.3"/><rect class="s-slow" x="491.9" y="16.6" width="25.7" height="33.4"/><rect class="s-slow" x="524.1" y="16.6" width="25.7" height="35.5"/><rect class="s-slow" x="556.3" y="16.6" width="25.7" height="37.6"/><rect class="s-slow" x="588.5" y="16.6" width="25.7" height="39.7"/><rect class="s-slow" x="620.7" y="16.6" width="25.7" height="41.8"/><rect class="s-slow" x="652.9" y="16.6" width="25.7" height="43.9"/><rect class="s-fast" x="652.9" y="60.4" width="25.7" height="160.9"/><rect class="s-slow" x="685.0" y="16.6" width="25.7" height="46.0"/><rect class="s-fast" x="685.0" y="62.5" width="25.7" height="160.9"/><line class="s-zero" x1="6" y1="16.6" x2="714" y2="16.6"/><line class="s-start" x1="456.5" y1="0" x2="456.5" y2="240"/><polyline class="s-run" points="22.1,20.7 54.3,24.9 86.5,29.1 118.6,33.3 150.8,37.5 183.0,41.6 215.2,45.8 247.4,50.0 279.5,54.2 311.7,58.3 343.9,62.5 376.1,66.7 408.3,70.9 440.5,75.1"/><polyline class="s-run" points="472.6,47.9 504.8,50.0 537.0,52.1 569.2,54.2 601.4,56.3 633.5,58.3 665.7,221.4 697.9,223.4"/></svg><div class="xax" aria-hidden="true"><span>2026-09-23</span><span>2026-10-14</span></div></div><ul class="legend" aria-label="범례"><li class="legend-item"><svg class="sw" viewBox="0 0 28 12" aria-hidden="true" focusable="false"><rect class="s-slow" x="1" y="1" width="26" height="10"/></svg><span>잰 것(체결가 차이, 수수료) -0.3%p</span></li><li class="legend-item"><svg class="sw" viewBox="0 0 28 12" aria-hidden="true" focusable="false"><rect class="s-fast" x="1" y="1" width="26" height="10"/></svg><span>나머지(추정) -1.1%p</span></li><li class="legend-item"><span>처음 후보 2026-10-13 15:58 UTC 매도</span></li><li class="legend-item"><svg class="sw" viewBox="0 0 28 12" aria-hidden="true" focusable="false"><line class="s-run" x1="1" y1="6" x2="27" y2="6"/></svg><span>합계 -1.4%p</span></li></ul></section>
+<section class="panel"><h2 class="h2">체결 대조</h2><p class="sub">이번 구간(2026-10-07부터) 값이에요.</p><div class="scroll wide cq" role="region" aria-label="놓친 주문 후보 표" tabindex="0"><table class="tbl"><thead><tr><th scope="col" class="cell cell-head">시각(UTC)</th><th scope="col" class="cell cell-head">종목</th><th scope="col" class="cell cell-head">방향</th><th scope="col" class="cell cell-head">뜻</th></tr></thead><tbody><tr class="row"><td class="cell">2026-10-13 15:58 UTC</td><td class="cell">BTCUSDT</td><td class="cell">매도</td><td class="cell"><span class="why-warn">백테스트에만 있는 거래(놓친 주문으로 추정)</span></td></tr></tbody></table></div><ul class="rows narrow cq" aria-label="놓친 주문 후보 목록"><li class="item"><div class="item-head"><span class="item-name">2026-10-13 15:58 UTC</span></div><div class="why why-warn">백테스트에만 있는 거래(놓친 주문으로 추정)</div><dl class="pairs"><div><dt>종목</dt><dd>BTCUSDT</dd></div><div><dt>방향</dt><dd>매도</dd></div></dl></li></ul><p class="sub">체결가 차이 중앙값 -5.3bp, 최대 -9.1bp</p><p class="sub">매일 대조는 건별 체결 짝(가격과 수량)을 저장하지 않아요.</p><p class="sub">건별 짝 표가 필요하면 AI에게 첫 회고를 부탁해 주세요.</p></section>
+<p class="sub">엔진은 주문을 내거나 봇을 멈추지 않아요. 멈출지는 직접 정해요.</p>
+</main>
+</body>
+</html>
