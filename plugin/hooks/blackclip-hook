@@ -1,0 +1,58 @@
+#!/bin/sh
+# blackclip 훅 넷이 모두 부르는 래퍼. 엔진을 PATH → 엔진이 스스로 적은 engine 파일 →
+# ~/.local/bin(uv tool · pipx 기본 자리) 순서로 찾아 stdin JSON을 넘긴다. 연 레포 안의 파일(.venv 등)을 스스로 찾아
+# 실행하지 않는다: -p는 폴더 신뢰 확인이 없고 --setting-sources로 레포 설정을 막아도 사용자 플러그인 훅은 돌기 때문.
+# engine 파일은 고객이 돌린 엔진(scan · setup · connect)이 사용자 설정 폴더에 적은 것이라 연 레포가 못 바꾼다.
+# 그 폴더와 파일이 링크가 아니고 내 것이며 그룹 · 남이 못 쓸 때만 읽고, 안의 경로가 가리키는 실행 파일도 같은 조건일 때만
+# 돌린다. find · id는 절대 경로로만 부른다.
+# SessionStart 밖에서는 엔진 stdout을 버리고(async stdout은 AI에게 감), 늘 종료 0.
+# PATH는 절대 경로 칸만 본다. 빈 칸 · . · 상대 폴더는 지금 폴더(연 레포)를 가리키고, macOS /bin/sh(bash 3.2)의
+# command -v는 그런 칸에서 찾은 것도 /…/./blackclip 꼴 절대 경로로 돌려줘 결과로는 못 거른다(실측).
+bc=
+set -f
+old_ifs=$IFS
+IFS=:
+for d in $PATH; do
+  case $d in
+    /*) if [ -f "$d/blackclip" ] && [ -x "$d/blackclip" ]; then bc=$d/blackclip; break; fi ;;
+  esac
+done
+IFS=$old_ifs
+set +f
+case $HOME in # HOME도 절대 경로만: 상대 HOME(.)은 연 레포를 가리켜 거기 심은 .config · .local을 읽게 됨
+  /*) home=$HOME ;;
+  *) home= ;;
+esac
+if [ -z "$bc" ]; then
+  case $XDG_CONFIG_HOME in
+    /*) conf=$XDG_CONFIG_HOME ;;
+    *) conf=${home:+$home/.config} ;;
+  esac
+  d=$conf/blackclip
+  f=$d/engine
+  me=$(/usr/bin/id -u 2>/dev/null)
+  if [ -n "$conf" ] && [ -n "$me" ] && [ -d "$d" ] && [ ! -L "$d" ] && [ -f "$f" ] && [ ! -L "$f" ] \
+    && [ "$(/usr/bin/find "$d" -prune -user "$me" ! -perm -020 ! -perm -002 -print 2>/dev/null)" = "$d" ] \
+    && [ "$(/usr/bin/find "$f" -prune -user "$me" ! -perm -020 ! -perm -002 -print 2>/dev/null)" = "$f" ]; then
+    p=
+    IFS= read -r p < "$f"
+    case $p in
+      /*) if [ -f "$p" ] && [ -x "$p" ] && [ ! -L "$p" ] \
+        && [ "$(/usr/bin/find "$p" -prune -user "$me" ! -perm -020 ! -perm -002 -print 2>/dev/null)" = "$p" ]; then bc=$p; fi ;;
+    esac
+  fi
+fi
+if [ -z "$bc" ] && [ -n "$home" ] && [ -f "$home/.local/bin/blackclip" ] && [ -x "$home/.local/bin/blackclip" ]; then
+  bc=$home/.local/bin/blackclip
+fi
+if [ -z "$bc" ]; then
+  cat >/dev/null
+  if [ "$1" = "SessionStart" ]; then
+    printf '%s\n' '{"systemMessage": "blackclip 엔진을 못 찾았어요 · 터미널에서 blackclip --version이 되는지 확인해 주세요"}'
+  fi
+elif [ "$1" = "SessionStart" ]; then
+  "$bc" hook "$1"
+else
+  "$bc" hook "$1" >/dev/null
+fi
+exit 0
