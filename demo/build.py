@@ -26,7 +26,7 @@ SITE = Path(__file__).resolve().parent / "site"
 
 REPO_URL = "https://github.com/Noah-TaeHwan/blackclip-guardrail"
 
-INSTALL = (f"uv tool install git+{REPO_URL}", "blackclip --version",
+INSTALL = ("uv tool install blackclip-guardrail", "blackclip --version",
            "claude plugin install blackclip-guardrail --marketplace Noah-TaeHwan/blackclip-guardrail --scope project")
 """첫 장의 설치 명령(README 「설치」 절과 같은 줄)."""
 

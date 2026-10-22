@@ -25,7 +25,7 @@ AI와 함께 만든 매매 전략을 실돈 넣기 전에 점검하고, 넣은 �
 
 엔진(`blackclip` 명령):
 
-    uv tool install git+https://github.com/Noah-TaeHwan/blackclip-guardrail
+    uv tool install blackclip-guardrail
     blackclip --version
 
 `blackclip`을 못 찾는다고 나오면 `uv tool update-shell`을 돌리고 새 터미널을 열어요.
