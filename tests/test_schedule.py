@@ -68,10 +68,11 @@ def test_cli_remove_failure_exits_nonzero(tmp_path, monkeypatch, capsys):
 
 
 def test_install_bootstrap_failure_raises(tmp_path):
-    """bootstrap이 실패하면 OSError(어느 plist인지)."""
+    """bootstrap이 실패하면 OSError(어느 plist인지), 실패한 plist는 남기지 않는다(setup이 plist로 「걸림」을 셈)."""
     with pytest.raises(OSError, match="launchctl bootstrap이 실패했습니다\\(com.blackclip.watch."):
         install(tmp_path, 9, 10, tmp_path / "A", lambda a: 5 if a[1] == "bootstrap" and "watch" in a[3] else 0, "darwin",
                 "/x/blackclip")
+    assert [p.name.split(".")[2] for p in (tmp_path / "A").iterdir()] == ["daily"]
 
 
 def test_other_os_prints_crontab_lines(tmp_path):

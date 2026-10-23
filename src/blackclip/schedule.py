@@ -238,6 +238,7 @@ def install(repo: Path, hour: int, minute: int, agents: Path | None = None, run:
         run(["launchctl", "bootout", f"{domain}/{label(repo, kind)}"])  # 없으면 실패해도 된다
         path.write_bytes(jobs[kind])
         if run(["launchctl", "bootstrap", domain, str(path)]) != 0:
+            path.unlink(missing_ok=True)  # 남으면 setup이 plist만 보고 걸린 것으로 셈
             raise OSError(f"launchctl bootstrap이 실패했습니다({path.name})")
     for kind, what in () if daily else KINDS:  # 전에 건 둘이 남으면 돌 때마다 「저장된 전략이 없습니다」로 끝남
         line = _drop(repo, agents, run, kind, what)[1]

@@ -2,6 +2,13 @@
 
 버전은 [SemVer](https://semver.org/lang/ko/)를 따라요.
 
+## [0.2.1] - 2026-10-23
+
+### 고친 것
+- `blackclip setup`: 키 없이 다 붙인 뒤에도 「지금 「조회 키」」라고 하던 것을 고쳤어요. 선이 있고 조회 키가 없으면 「키 없이 지켜보기」의 남은 것(예약, 텔레그램)을 하나씩 알려 주고, 다 붙이면 「셋업: 키 없이 지켜보기(<전략>) 끝」이라고 해요. 조회 키부터의 단계는 실제 계좌와 맞대 볼 때만 하는 것으로 보여요.
+- `blackclip schedule`: `launchctl bootstrap`이 실패하면 예약 파일(plist)을 남기지 않아요. 남아 있으면 `blackclip setup`이 예약이 걸린 것으로 셌어요.
+- README 설치: 플러그인 마켓을 `https://github.com/Noah-TaeHwan/blackclip-guardrail.git`로 적었어요. `Noah-TaeHwan/blackclip-guardrail` 꼴은 SSH부터 시도해서, GitHub SSH 키가 없으면 Claude Code 안의 `/plugin install`과 플러그인 업데이트가 막힐 수 있었어요.
+
 ## [0.2.0] - 2026-10-23
 
 돌리던 봇에 거래소 키 없이 붙는 판이에요.
