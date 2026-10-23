@@ -1,6 +1,6 @@
 {
   "name": "blackclip-guardrail",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "AI와 함께 만든 매매 전략으로 돌리는 봇을 거래소 키 없이 지켜보다가 기록이 끊기면 텔레그램으로 깨우는 blackclip 엔진의 Claude Code 연결(스킬 하나와 훅 넷, 지켜보기만, 실전 전 점검 · 백테스트 대조도, macOS)",
   "author": {
     "name": "Noah TaeHwan Oh"

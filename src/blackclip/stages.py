@@ -202,14 +202,16 @@ def judge(root: Path, agents: Path | None = None, now: datetime | None = None) -
         {"steps": 단계 이름들, "done": [True · False · None(미확인)], "now": 지금 단계 이름 또는 None,
          "next": 다음 할 일 한 줄, "branch": "있음" · "없음" · None, "notes": [덧붙일 줄], "strategy": 민 전략 이름 또는 None,
          "alerts": 「예약 · 알림」 단계의 세 값 {"chosen": 민감도를 골랐나, "linked": 텔레그램 대화를 이었나,
-         "scheduled": 예약 plist가 있나(macOS가 아니면 None)}(대시보드 연결 화면이 씀)}.
+         "scheduled": 예약 plist가 있나(macOS가 아니면 None)}(대시보드 연결 화면이 씀),
+         "keyless": 키 없이 붙인 길(선 follow.json이 있고 조회 키 없음)이면 {"names": 그 전략들, "left": 남은 것
+         「예약」 · 「텔레그램」}, 아니면 None}.
     """
     from blackclip.schedule import label  # plistlib만 부름(가벼움)
 
     notes: list[str] = []
     if root.is_symlink():  # 그 안 · 옆 어떤 경로도 읽지 않고 처음 상태
         return {"steps": list(STEPS), "done": [False] * len(STEPS), "now": STEPS[0], "branch": None, "strategy": None,
-                "alerts": {"chosen": False, "linked": False, "scheduled": None},
+                "alerts": {"chosen": False, "linked": False, "scheduled": None}, "keyless": None,
                 "notes": ["작업 폴더 .blackclip이 심볼릭 링크라 읽지 않음(레포 안의 진짜 폴더여야 함)"],
                 "next": "레포의 .blackclip 심볼릭 링크를 치운 뒤 blackclip scan . (scan도 링크된 작업 폴더에는 쓰지 않음)"}
     try:
@@ -241,6 +243,9 @@ def judge(root: Path, agents: Path | None = None, now: datetime | None = None) -
     agents = agents or Path.home() / "Library" / "LaunchAgents"
     scheduled = (agents / f"{label(root.parent)}.plist").exists() if sys.platform == "darwin" else None
     alerts = (None if scheduled is None else scheduled) if chosen and linked else False
+    follow_on = (agents / f"{label(root.parent, 'follow')}.plist").exists() if sys.platform == "darwin" else None
+    keyless = ({"names": watching, "left": [s for s, ok in (("예약", follow_on), ("텔레그램", linked)) if ok is not True]}
+               if watching and not keyed else None)  # 키 없이 다 붙였는데 「조회 키」에 멈춘 것처럼 보이지 않게
     steps: list[str] = list(STEPS)
     done: list[bool | None] = [_regular(root / "map.json"), keyed, fetched, level >= 1, level >= 2, level >= 3, level >= 4,
                                alerts]
@@ -252,10 +257,15 @@ def judge(root: Path, agents: Path | None = None, now: datetime | None = None) -
     name = focus.name if focus else "<전략>"
     since = (now or datetime.now(timezone.utc)).astimezone(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0) \
         - timedelta(days=FIRST_DAYS)
+    keyless_next = {  # 키 없는 길의 남은 것 하나, 다 했으면 키는 고를 때만
+        "예약": ("blackclip schedule (5분마다 blackclip follow)" if follow_on is False else
+               "이 운영체제에서는 예약을 확인하지 않음 · blackclip schedule이 보인 crontab 줄을 걸었는지 직접 확인"),
+        "텔레그램": f"{BOTFATHER} · 토큰을 넣은 뒤 blackclip connect --telegram으로 대화를 이어요",
+        None: "실제 계좌와도 맞대 보려면(고를 때만) blackclip connect --open",
+    }
     nxt = {
         "훑기": "blackclip scan . (연 폴더만 실행 없이 훑음, 다른 폴더는 고객이 고를 때만)",
-        "조회 키": (f"키 없이 지켜보는 중({', '.join(watching)}) · 실제 계좌와도 맞대 보려면(고를 때만) blackclip connect --open"
-                  if watching else
+        "조회 키": (keyless_next[keyless["left"][0] if keyless["left"] else None] if keyless else
                   "돌고 있는 봇이 있으면 키 없이 먼저 붙이기(봇 기록 → 어댑터 → blackclip events <전략> → 선 승인 → "
                   "blackclip follow <전략> --quiet-minutes <분> → blackclip schedule) · 실제 계좌와도 맞대 보려면 "
                   "blackclip connect --open (바이낸스에서 「조회」만 켠 API 키를 이 컴퓨터 브라우저에서 넣기)"),
@@ -278,7 +288,7 @@ def judge(root: Path, agents: Path | None = None, now: datetime | None = None) -
                     if alerts is None else "blackclip schedule (매일 대조 · 자주 보는 시계 예약)"),
     }
     return {"steps": steps, "done": done, "now": current, "branch": branch, "notes": notes, "strategy": focus.name if focus else None,
-            "alerts": {"chosen": chosen, "linked": linked, "scheduled": scheduled},
+            "alerts": {"chosen": chosen, "linked": linked, "scheduled": scheduled}, "keyless": keyless,
             "next": nxt[current] if current else "셋업 끝 · 매일 대조 결과는 .blackclip/strategies/<전략>/daily/"}
 
 
@@ -296,6 +306,9 @@ def render(j: dict) -> list[str]:
     head = f"셋업: {len(j['steps'])}단계 중 {n}단계 끝" + (f" · 지금 「{j['now']}」" + ("(미확인)" if unknown else "")
                                                        if j["now"] else "")
     marks = " · ".join(f"{s} {'끝' if d is True else '미확인' if d is None else '전'}" for s, d in zip(j["steps"], j["done"]))
+    if k := j["keyless"]:  # 키 없이 붙인 길은 그 길로 말하고, 키 단계들은 고를 때만
+        head = f"셋업: 키 없이 지켜보기({', '.join(k['names'])}) " + ("끝" if not k["left"] else "· 남은 것 " + " · ".join(k["left"]))
+        marks = f"고를 때만(실제 계좌와 맞대 보기): {marks}"
     branch = {"있음": "체결 기록 있음(실전 전략 먼저 · 첫 회고부터)", "없음": "체결 기록 없음(훑기 → 점검 → 가드레일)",
               None: "체결 기록 모름(아직 안 받음)"}[j["branch"]]
     return [head, marks, f"갈래: {branch}", f"다음: {j['next']}", *j["notes"]]

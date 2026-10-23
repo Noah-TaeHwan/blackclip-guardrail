@@ -33,11 +33,11 @@ AI와 함께 만든 매매 전략으로 봇을 돌리고 있다면, 거래소 �
 
 Claude Code 플러그인(스킬 하나와 훅 넷). 전략 레포 폴더에서 Claude Code를 열고(Claude Code 2.1.275 이상):
 
-    /plugin install blackclip-guardrail --marketplace Noah-TaeHwan/blackclip-guardrail
+    /plugin install blackclip-guardrail --marketplace https://github.com/Noah-TaeHwan/blackclip-guardrail.git
 
 터미널에서는 같은 일을 이렇게 해요(Claude Code 2.1.292 이상):
 
-    claude plugin install blackclip-guardrail --marketplace Noah-TaeHwan/blackclip-guardrail --scope project
+    claude plugin install blackclip-guardrail --marketplace https://github.com/Noah-TaeHwan/blackclip-guardrail.git --scope project
 
 `--scope project`로 넣으면 그 레포에서만 돌아요. 기본값(user)은 모든 폴더에서 훅이 돌고, 퀀트 레포처럼 보이지 않는 폴더에서는 첫 셋업 안내를 내지 않아요.
 

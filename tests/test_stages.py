@@ -519,15 +519,30 @@ def test_no_fills_yet_does_not_read_retro_folders(tmp_path, monkeypatch):
     assert (j["branch"], j["now"]) == (None, "조회 키")
 
 
-def test_key_step_points_to_keyless_first(tmp_path):
-    """조회 키 단계의 다음 할 일: 키 없이 붙이기를 먼저, 선(follow.json)이 있으면 지켜보는 중이라고 하고 키는 고를 때만."""
+def test_key_step_points_to_keyless_first(tmp_path, monkeypatch):
+    """조회 키 단계의 다음 할 일: 키 없이 붙이기를 먼저. 선(follow.json)이 있으면 키 없는 길의 남은 것(예약 → 텔레그램)을 하나씩,
+    다 붙이면 「키 없이 지켜보기 끝」이고 「지금 「조회 키」」는 없다(키는 고를 때만)."""
+    monkeypatch.setattr(stages.sys, "platform", "darwin")
+    agents = tmp_path / "agents"
+    agents.mkdir()
     (tmp_path / ".git").mkdir()
     root = ensure(tmp_path)
     (root / "map.json").write_text("{}")
-    j = stages.judge(root)
+    j = stages.judge(root, agents)
     assert j["now"] == "조회 키" and j["next"].startswith("돌고 있는 봇이 있으면 키 없이 먼저 붙이기(")
     assert j["next"].index("blackclip follow") < j["next"].index("blackclip connect --open")
+    assert j["keyless"] is None
     s = root / "strategies" / "bot1"
     s.mkdir(parents=True)
     (s / "follow.json").write_text('{"quiet_minutes": 90}')
-    assert stages.judge(root)["next"] == "키 없이 지켜보는 중(bot1) · 실제 계좌와도 맞대 보려면(고를 때만) blackclip connect --open"
+    j = stages.judge(root, agents)
+    assert stages.render(j)[0] == "셋업: 키 없이 지켜보기(bot1) · 남은 것 예약 · 텔레그램"
+    assert j["next"] == "blackclip schedule (5분마다 blackclip follow)"
+    (agents / f"{label(tmp_path, 'follow')}.plist").write_bytes(b"")
+    assert stages.judge(root, agents)["next"].startswith(stages.BOTFATHER)
+    _conns(root, telegram={"chat_id": 1})
+    lines = stages.render(stages.judge(root, agents))
+    assert lines[0] == "셋업: 키 없이 지켜보기(bot1) 끝"
+    assert lines[1].startswith("고를 때만(실제 계좌와 맞대 보기): 훑기 끝 · 조회 키 전")
+    assert lines[3] == "다음: 실제 계좌와도 맞대 보려면(고를 때만) blackclip connect --open"
+    assert not any("지금 「조회 키」" in line for line in lines)

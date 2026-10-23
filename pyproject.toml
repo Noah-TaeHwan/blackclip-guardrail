@@ -1,6 +1,6 @@
 [project]
 name = "blackclip-guardrail"
-version = "0.2.0"
+version = "0.2.1"
 license = "FSL-1.1-ALv2"
 license-files = ["LICENSE"]
 description = "AI와 함께 만든 매매 전략으로 돌리는 봇을 거래소 키 없이 지켜보다가 기록이 끊기면 텔레그램으로 깨우는 로컬 엔진(실전 전 점검 · 백테스트 대조도, macOS)"

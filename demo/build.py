@@ -27,8 +27,9 @@ SITE = Path(__file__).resolve().parent / "site"
 REPO_URL = "https://github.com/Noah-TaeHwan/blackclip-guardrail"
 
 INSTALL = ("uv tool install blackclip-guardrail", "blackclip --version",
-           "claude plugin install blackclip-guardrail --marketplace Noah-TaeHwan/blackclip-guardrail --scope project")
-"""첫 장의 설치 명령(README 「설치」 절과 같은 줄)."""
+           ("claude plugin install blackclip-guardrail --marketplace https://github.com/Noah-TaeHwan/blackclip-guardrail.git"
+            " --scope project"))
+"""첫 장의 설치 명령(README 「설치」 절과 같은 줄). 마켓은 https 주소로: owner/repo 꼴은 SSH부터 시도해 GitHub SSH 키가 없으면 막힐 수 있음."""
 
 FIRST_CSS = ".cmd{box-sizing:border-box;max-width:100%;white-space:pre;overflow-x:auto}"
 """첫 장에만 덧붙이는 규칙: 좁은 화면에서 명령이 붙임표에서 줄바뀌면 붙임표가 명령의 일부인지 헷갈려서 상자 안 가로 스크롤로."""
