@@ -60,4 +60,7 @@ def test_metadata(dist):
     assert len(meta.get_all("Project-URL") or []) >= 2
     assert meta["Description-Content-Type"] == "text/markdown"
     assert "Operating System :: MacOS" in (meta.get_all("Classifier") or [])
-    assert str(meta.get_payload()).lstrip().startswith("# BlackClip Guardrail")
+    head = str(meta.get_payload()).lstrip().splitlines()
+    # PyPI 긴 설명은 레포 밖에서 보이므로 한국어 링크가 절대 주소여야 안 깨짐
+    assert head[0] == "English | [한국어](https://github.com/Noah-TaeHwan/blackclip-guardrail/blob/main/README.ko.md)"
+    assert head[2] == "# BlackClip Guardrail"

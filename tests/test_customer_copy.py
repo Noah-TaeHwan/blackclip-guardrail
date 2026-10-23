@@ -57,7 +57,7 @@ def marker_hits(text: str, where: object = "") -> list[str]:
 
 def test_no_internal_markers():
     """고객 글에 내부 표지가 0개다. 실패하면 어디에 무엇이 남았는지 줄마다 보인다."""
-    docs = (ROOT / "README.md", ROOT / "plugin" / "skills" / "blackclip" / "SKILL.md", ROOT / "CHANGELOG.md",
+    docs = (ROOT / "README.md", ROOT / "README.ko.md", ROOT / "plugin" / "skills" / "blackclip" / "SKILL.md", ROOT / "CHANGELOG.md",
             ROOT / ".claude-plugin" / "marketplace.json", ROOT / "plugin" / ".claude-plugin" / "plugin.json",
             ROOT / "pyproject.toml")  # 공개 레포 루트 · 마켓 · PyPI에서 바로 보이는 글
     hits = [*(h for f, n, s in _src_strings() for h in marker_hits(s, f"{f}:{n}")),
@@ -70,7 +70,7 @@ def test_store_descriptions_use_the_readme_words_and_say_macos():
     import json
     import tomllib
     term = "AI와 함께 만든 매매 전략"
-    assert term in (ROOT / "README.md").read_text(encoding="utf-8").splitlines()[2]
+    assert term in (ROOT / "README.ko.md").read_text(encoding="utf-8").splitlines()[4]  # 언어 줄 · 제목 다음 첫 문장
     market = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8"))
     descs = [market["description"], *(p["description"] for p in market["plugins"]),
              json.loads((ROOT / "plugin" / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))["description"],

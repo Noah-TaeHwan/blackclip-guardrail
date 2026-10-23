@@ -58,7 +58,7 @@ def first_page() -> bytes:
             '바이낸스 조회 전용 API 키는 실제 계좌와 맞대 볼 때만 필요해요.</p>'
             f"{cmds}"
             '<p class="sub">blackclip을 못 찾는다고 나오면 uv tool update-shell을 돌리고 새 터미널을 열어요. '
-            f'키 없이 붙이는 처음 10분 순서는 <a class="link" href="{REPO_URL}#readme">README</a>에 있어요.</p></section>\n'
+            f'키 없이 붙이는 처음 10분 순서는 <a class="link" href="{REPO_URL}/blob/main/README.ko.md">README</a>에 있어요.</p></section>\n'
             '<p class="sub">투자 자문이 아니에요. 점검 결과와 경고는 참고용 숫자이고 수익을 보장하지 않아요.</p>'
             '<p class="sub">소스 공개(FSL-1.1-ALv2), 각 버전은 나온 지 2년 뒤 Apache-2.0으로 바뀌어요.</p>')
     return ('<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n'

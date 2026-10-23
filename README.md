@@ -1,147 +1,188 @@
+English | [한국어](https://github.com/Noah-TaeHwan/blackclip-guardrail/blob/main/README.ko.md)
+
 # BlackClip Guardrail
 
-AI와 함께 만든 매매 전략으로 봇을 돌리고 있다면, 거래소 키 없이 그 봇이 남기는 기록을 지켜보다가 기록이 끊기면 텔레그램으로 깨워 주는 맥용 로컬 도구예요. 실돈 넣기 전 점검과 백테스트 대조도 해요.
+If you run a trading bot on a strategy you built with AI, Guardrail watches the logs the bot already writes, without an exchange API key, and messages you on Telegram when they stop coming in. It runs locally on your Mac. It also checks a strategy before you put real money on it and reconciles live fills against the backtest.
 
-## 무엇을 하나요
+BlackClip is a set of tools individual investors use to check a decision before they act on it.
 
-- **봇 지켜보기(키 없이)**: 돌고 있는 봇이 이미 남기는 기록 파일을 읽어요. 기록이 정한 시간(예: 90분)보다 오래 끊기면 텔레그램으로 「봇이 안 보여요」를, 다시 들어오면 「봇이 다시 보여요」를 보내요. 봇 코드는 고치지 않아요.
-- **점검**: 실전에 넣기 전에 재현성 · 미래참조 · 거래비용 · 시도 수 · 국면을 보고, 그 전략에 맞는 가드레일(정상 범위와 경고선)을 만들어요.
-- **대조(고를 때만)**: 실제 계좌와도 맞대 보고 싶으면 조회 전용 키로 체결을 받아 같은 기간 백테스트와 매일 맞춰 보고, 벗어나면 텔레그램으로 알려 줘요.
-- **회고**: 이미 봇을 돌리고 있었다면 지난 석 달 체결로 「첫 회고」 한 장부터 보여 줘요.
-- **로컬**: 키 · 체결 · 전략 코드는 이 맥에만 있어요. 화면은 이 컴퓨터(127.0.0.1)에서만 열려요.
+- [Research](https://research.blackclip.app): Can I trust this investment idea?
+- [Guardrail](https://guardrail.blackclip.app): Is this strategy ready to run with real money?
+- [Hedge](https://hedge.blackclip.app): How much of the risk I hold today can I realistically cut?
 
-주문은 내지 않아요. 경고만 하고 봇을 멈추지도 않아요.
+Brand site: [blackclip.app](https://blackclip.app)
 
-[샘플 대시보드 보기](https://guardrail.blackclip.app/demo/): 지어낸 전략 넷으로 그린 읽기 전용 화면이에요. 설치 없이 먼저 볼 수 있어요.
+![Sample dashboard home. Two live strategies with their status and the gap against the same-period backtest, plus two stopped strategies](https://raw.githubusercontent.com/Noah-TaeHwan/blackclip-guardrail/main/assets/readme-demo.png)
 
-## 필요한 것
+The [sample dashboard](https://guardrail.blackclip.app/demo/) at 1440 px. It's a read-only page drawn from four made-up strategies, so you can look around before installing anything. The screens, commands, and Telegram messages are in Korean only for now.
 
-- macOS(예약 작업에 launchd를 써요)
-- [uv](https://docs.astral.sh/uv/)(파이썬 3.11 이상은 uv가 받아 줘요)
-- [Claude Code](https://claude.com/claude-code)(봇 기록을 이벤트로 바꾸는 어댑터와 전략 연결 파일을 만들 때 필요해요. 다른 명령도 대신 돌리고 결과를 설명해 줘요)
-- 텔레그램 계정(알림을 받으려면)
-- 바이낸스 **조회 전용** API 키(현물과 선물): 실제 계좌와 맞대 볼 때만 필요해요. 주문이나 출금 권한이 켜진 키는 저장하지 않아요.
+## What it does
 
-## 설치
+- It watches your bot without any keys. It reads the log file your running bot already writes, and if nothing new shows up for longer than the limit you set (say, 90 minutes), it sends "봇이 안 보여요" (Bot not seen) on Telegram. When entries come back, it sends "봇이 다시 보여요" (Bot seen again).
+- Before a strategy goes live, it checks reproducibility, look-ahead bias, trading costs, how many variants you tried, and market regimes, then sets guardrails for that strategy: a normal range and warning lines.
+- If you choose to, it reconciles against your real account. It pulls your fills with a read-only API key, compares them every day with the backtest over the same period, and tells you on Telegram when they drift apart.
+- If your bot was already running, it starts with a "첫 회고" (first retro) built from the last three months of fills.
 
-엔진(`blackclip` 명령):
+## What it doesn't do
+
+- It doesn't place orders. It only warns you and never stops your bot. Stopping is your call.
+- It doesn't change your bot's code. It only reads the logs the bot writes.
+- It won't store a key that has trading or withdrawal permissions turned on.
+- It isn't investment advice. Check results, guardrails, and warnings are reference numbers and don't guarantee returns.
+
+## Requirements
+
+- macOS (scheduled jobs run on launchd)
+- [uv](https://docs.astral.sh/uv/) (uv fetches Python 3.11 or later for you)
+- [Claude Code](https://claude.com/claude-code), to write the adapter that turns your bot's logs into events and the file that links your strategy. It can also run the other commands for you and explain the output.
+- A Telegram account, for alerts
+- A Binance **read-only** API key (spot and futures), only if you want to reconcile against your real account
+
+## Install
+
+The engine (the `blackclip` command):
 
     uv tool install blackclip-guardrail
     blackclip --version
 
-`blackclip`을 못 찾는다고 나오면 `uv tool update-shell`을 돌리고 새 터미널을 열어요.
+If your shell can't find `blackclip`, run `uv tool update-shell` and open a new terminal.
 
-Claude Code 플러그인(스킬 하나와 훅 넷). 전략 레포 폴더에서 Claude Code를 열고(Claude Code 2.1.275 이상):
+The Claude Code plugin (one skill and four hooks). Open Claude Code in your strategy repo (Claude Code 2.1.275 or later) and run:
 
     /plugin install blackclip-guardrail --marketplace https://github.com/Noah-TaeHwan/blackclip-guardrail.git
 
-터미널에서는 같은 일을 이렇게 해요(Claude Code 2.1.292 이상):
+From a terminal, the same install looks like this (Claude Code 2.1.292 or later):
 
     claude plugin install blackclip-guardrail --marketplace https://github.com/Noah-TaeHwan/blackclip-guardrail.git --scope project
 
-`--scope project`로 넣으면 그 레포에서만 돌아요. 기본값(user)은 모든 폴더에서 훅이 돌고, 퀀트 레포처럼 보이지 않는 폴더에서는 첫 셋업 안내를 내지 않아요.
+With `--scope project` the plugin only runs in that repo. With the default (user) scope the hooks run in every folder, and they skip the first-setup prompt in folders that don't look like a quant repo.
 
-## 처음 10분: 돌리던 봇에 키 없이 붙이기
+## First 10 minutes: attach to a running bot without keys
 
-전략 레포 폴더에서 Claude Code를 열고 「봇 지켜봐 줘」라고 해요. 이 순서로 가요.
+Open Claude Code in your strategy repo and ask it to watch your bot ("봇 지켜봐 줘"). It works through these steps:
 
-1. 봇과 기록 찾기: `blackclip scan .`으로 폴더를 실행 없이 훑고, 봇 코드에서 봇이 덧붙여 쓰는 기록 파일(로그 · jsonl · csv)을 골라요. 어느 파일이 봇인지 모르면 물어봐요.
-2. 어댑터: Claude Code가 그 기록 한 줄을 표준 이벤트로 바꾸는 `.blackclip/strategies/<전략>/adapter.py`를 만들어요. 엔진은 이 파일을 키 · 환경 변수 없이 따로 띄운 프로세스에서 돌려요.
-3. 이벤트 확인
+1. Find the bot and its log: `blackclip scan .` reads through the folder without running anything, then Claude Code reads the bot code to pick the file the bot appends to (a log, jsonl, or csv). If it can't tell which file belongs to the bot, it asks you.
+2. Adapter: Claude Code writes `.blackclip/strategies/<strategy>/adapter.py`, which turns one log line into a standard event. The engine runs this file in a separate process with no keys and no environment variables.
+3. Check the events
 
-       blackclip events <전략>
+       blackclip events <strategy>
 
-   들어오는 종류(판단 · 체결 · 포지션 · 잔고), 형식이 안 맞는 줄, 마지막 기록 시각을 보여 줘요.
+   It shows which event types are coming in (decisions, fills, positions, balances), lines that don't match the format, and when the last entry was written.
 
-4. 선 정하기: 봇이 기록을 남기는 평소 간격을 보고 Claude Code가 분을 제안해요(예: 1시간마다 판단하는 봇이면 90분). 정하면
+4. Set the limit: Claude Code looks at how often your bot usually writes and suggests a number of minutes (90 minutes for a bot that decides once an hour, for example). Once you pick one:
 
-       blackclip follow <전략> --quiet-minutes 90
+       blackclip follow <strategy> --quiet-minutes 90
 
-5. 예약과 텔레그램
+5. Schedule and Telegram
 
        blackclip schedule
        blackclip connect --open --telegram
        blackclip connect --telegram
 
-   `schedule`이 5분마다 확인을 걸어요. 텔레그램 봇은 @BotFather에서 만들고, 마지막 명령이 띄운 숫자를 봇에게 보내면 이어져요. 맥이 잠든 동안은 확인도 멈춰요.
+   `schedule` sets up a check every 5 minutes. Create the Telegram bot with @BotFather, then send it the number the last command prints to link the chat. Checks pause while your Mac is asleep.
 
-## 실제 계좌와 맞대 보기(조회 키, 30분)
+## Reconcile against your real account (read-only key, 30 minutes)
 
-실제 체결을 같은 기간 백테스트와 맞대 보고 싶을 때의 순서예요. 바이낸스 조회 전용 키가 필요해요. 전략 레포 폴더에서 돌려요. Claude Code에서 「셋업해 줘」라고 해도 돼요. 그때는 `blackclip setup`이 알려 주는 다음 할 일 순서로 가요.
+Use this when you want to compare real fills against the backtest over the same period. You need a Binance read-only API key. Run these in your strategy repo. You can also ask Claude Code to set things up ("셋업해 줘"), and it follows the next steps `blackclip setup` reports, one at a time.
 
-1. 지금 어디까지 왔는지 보기
+1. See where you are
 
        blackclip scan .
        blackclip setup
 
-   `setup`이 다음 할 일 하나를 알려 줘요. 폴더를 읽기만 하고 코드는 실행하지 않아요.
+   `setup` tells you the one next step. It only reads the folder and doesn't run any code.
 
-2. 조회 키 넣기: 바이낸스 API 관리에서 「조회」만 켠 키를 만든 뒤
+2. Add the read-only key: in Binance API Management, create a key with only read access turned on, then
 
        blackclip connect --open
 
-   브라우저에 이 컴퓨터에서만 열리는 화면이 떠요. 키는 맥 키체인에 저장해요.
+   A page opens in your browser that only this computer can reach. The key goes into your Mac's Keychain.
 
-3. 체결 받기
+3. Pull fills
 
        blackclip fetch --symbols BTCUSDT --since "$(date -u -v-90d +%Y-%m-%dT00:00:00Z)"
 
-   `--since`는 처음 받을 시작 시각이에요(첫 회고가 지난 석 달이라 90일 전, `date -v-90d`는 맥 명령). 받은 체결은 `.blackclip/fills/`에 쌓여요.
+   `--since` is where the first pull starts. The first retro covers the last three months, hence 90 days back (`date -v-90d` is the macOS syntax). Fills pile up in `.blackclip/fills/`.
 
-4. 첫 회고
+4. First retro
 
-       mkdir -p .blackclip/strategies/<전략>
+       mkdir -p .blackclip/strategies/<strategy>
        blackclip retro --fills .blackclip/fills/binance-main/spot/fills.csv \
-         --backtest <백테스트 거래 목록 CSV> --capital <실전 시작 잔고> \
-         --live-start <실전 시작 ISO 시각> --days 90 \
+         --backtest <backtest trades CSV> --capital <starting live balance> \
+         --live-start <live start, ISO time> --days 90 \
          --end "$(date -u +%Y-%m-%dT00:00:00Z)" \
-         --out .blackclip/strategies/<전략>/retro.md
+         --out .blackclip/strategies/<strategy>/retro.md
 
-   오늘 0시(UTC)까지 90일을 봐요. `--end`를 빼면 마지막 체결 다음 날까지를 봐요. 선물이면 경로의 `spot`을 `futures`로 바꾸고 `--funding .blackclip/fills/binance-main/futures/funding.csv`를 더해요.
+   This covers the 90 days up to midnight UTC today. Without `--end`, it runs through the day after the last fill. For futures, change `spot` to `futures` in the path and add `--funding .blackclip/fills/binance-main/futures/funding.csv`.
 
-   CSV 모양과 예시 결과는 [`examples/retro/`](https://github.com/Noah-TaeHwan/blackclip-guardrail/tree/main/examples/retro)에 있어요. 실행 경고(놓친 주문과 비싸게 된 체결)는 기본으로 꺼져 있어요. 첫 회고를 읽고 나서 켜요:
+   The CSV formats and a sample result are in [`examples/retro/`](https://github.com/Noah-TaeHwan/blackclip-guardrail/tree/main/examples/retro) (in Korean). Execution alerts (missed orders and fills that came in at a worse price) are off by default. Turn them on after you've read your first retro:
 
        blackclip notify --execution-alerts on
 
-5. 텔레그램 잇기: 텔레그램 @BotFather에서 봇을 만들고 토큰을 받은 뒤
+5. Link Telegram: create a bot with @BotFather on Telegram and get its token, then
 
        blackclip connect --open --telegram
        blackclip connect --telegram
 
-   두 번째 명령이 띄운 숫자를 봇에게 보내면 이어져요.
+   Send your bot the number the second command prints to link the chat.
 
-6. 전략 연결 파일: Claude Code에게 「이 전략 연결해 줘」라고 하면 `.blackclip/strategies/<전략>/link.py`를 만들어요. 엔진은 따로 띄운 프로세스에서 이 파일을 불러(맨 위 코드도 돌아요) 가격 읽기 `load_prices()`와 신호 함수 `signals()`를 불러요.
+6. Strategy link file: ask Claude Code to link the strategy ("이 전략 연결해 줘") and it writes `.blackclip/strategies/<strategy>/link.py`. The engine imports this file in a separate process (top-level code runs too) and calls `load_prices()` to read prices and `signals()` for the signal function.
 
-7. 점검 · 가드레일 · 실전 시작 · 매일 알림
+7. Check, guardrails, going live, daily alerts
 
-       blackclip check <전략>
-       blackclip save <전략>
-       blackclip live <전략>
+       blackclip check <strategy>
+       blackclip save <strategy>
+       blackclip live <strategy>
        blackclip schedule
 
-   `schedule`은 매일 대조(이 맥 시간 기본 09:10, `--at HH:MM`으로 바꿈)와 1시간마다 보는 시계를 맥 예약 작업으로 걸어요. 그 시각에 맥이 잠들어 있으면 깨어날 때 한 번 돌아요. `blackclip schedule --remove`로 지워요.
+   `schedule` registers a daily reconcile (09:10 in your Mac's local time by default; change it with `--at HH:MM`) and an hourly watch as macOS scheduled jobs. If your Mac is asleep at that time, the job runs once when it wakes. Remove them with `blackclip schedule --remove`.
 
-## 대시보드
+## Dashboard
 
     blackclip dashboard
 
-이 컴퓨터 브라우저에서 전략 목록 · 가드레일 · 회고를 보고, 「연결」에서 키와 텔레그램 토큰을 넣어요. 실행할 때마다 새 접속 토큰을 만들고 Ctrl+C로 꺼요. 기본 포트는 8765예요.
+It opens in your browser on this computer and shows your strategy list, guardrails, and retros. Add your key and Telegram token under "연결" (Connections). Each run creates a new access token. Stop it with Ctrl+C. The default port is 8765.
 
-## 키와 데이터
+## How it works
 
-- 바이낸스 키와 텔레그램 토큰은 맥 키체인에 저장해요. 맥의 `security` 명령을 찾지 못할 때만 나만 읽을 수 있는 파일(`~/.config/blackclip/secrets.json`)에 둬요.
-- 체결 · 회고 · 매일 대조 기록은 레포 안 `.blackclip/`에 있어요. Git에는 전략 기록(점검 · 가드레일 · 기록 · 연결 코드)만 올라가고, 체결 · 연결 상태 · 이력은 `.blackclip/.gitignore`로 빠져요.
-- 밖으로 나가는 요청은 바이낸스 API(계좌 조회와 공개 봉), 텔레그램 봇 API, 직접 넣은 헬스체크 주소뿐이에요.
+- The numbers come from Python calculations in the engine, which doesn't call any AI model. The tests for those calculations are in [`tests/`](https://github.com/Noah-TaeHwan/blackclip-guardrail/tree/main/tests). Claude Code's part is writing the adapter and the strategy link file, running commands for you, and explaining the output.
+- Everything runs on your Mac. Keys, fills, and strategy code stay on it, and the pages only open on this computer (127.0.0.1).
+- Your Binance key and Telegram token go into the macOS Keychain. Only when the `security` command can't be found does it fall back to a file only you can read (`~/.config/blackclip/secrets.json`).
+- Fills, retros, and daily reconcile history live in `.blackclip/` inside your repo. Only strategy records (checks, guardrails, history, link code) go into Git; `.blackclip/.gitignore` keeps fills, connection state, and run history out.
+- The only outbound requests go to the Binance API (account reads and public candles), the Telegram Bot API, and any health check URL you add yourself.
 
-## 투자 고지
+## Development
 
-- 이 도구는 투자 자문이 아니에요. 점검 결과 · 가드레일 · 경고는 참고용 숫자이고, 수익을 보장하지 않아요.
-- 투자 결정과 그 결과(손실 포함)의 책임은 쓰는 사람에게 있어요.
-- 경고만 하고 주문을 내거나 봇을 멈추지 않아요. 멈출지는 직접 정해요.
-- 조회 전용 키만 받아요. 주문 · 출금 권한이 켜진 키는 저장하지 않아요.
-- 백테스트와 실전은 다를 수 있고, 거래소 응답이 늦거나 틀리면 결과도 틀릴 수 있어요.
-- BlackClip Guardrail은 바이낸스 · 텔레그램 · Anthropic과 제휴하거나 그 보증을 받은 도구가 아니에요.
+You need macOS and uv. Run these from the repo folder.
 
-## 라이선스
+| Task | Command |
+|---|---|
+| Install dependencies | `uv sync` |
+| Run the tests | `uv run pytest` |
+| Build and check the package | `uv build`, `uvx twine check --strict dist/*` |
+| Build the sample demo (runs its tests first) | `demo/build.sh <site folder>` |
+| Rewrite the dashboard golden pages | `uv run python scripts/update_golden.py` |
 
-소스 공개(FSL-1.1-ALv2), 각 버전은 나온 지 2년 뒤 Apache-2.0으로 바뀌어요.
+| Path | What's there |
+|---|---|
+| `src/blackclip/` | The engine (the `blackclip` command) |
+| `plugin/` | Claude Code plugin (skill and hooks) |
+| `.claude-plugin/marketplace.json` | Plugin marketplace |
+| `demo/` | Static build of the sample demo |
+| `examples/retro/` | Retro input CSV formats and a sample result |
+| `tests/` | Tests |
+
+What changed in each version is in [`CHANGELOG.md`](https://github.com/Noah-TaeHwan/blackclip-guardrail/blob/main/CHANGELOG.md) (in Korean).
+
+## Investment notice
+
+- This tool isn't investment advice. Check results, guardrails, and warnings are reference numbers and don't guarantee returns.
+- You're responsible for your investment decisions and their outcomes, including losses.
+- It only warns you. It doesn't place orders or stop your bot. Stopping is your call.
+- It only accepts read-only keys and won't store a key with trading or withdrawal permissions turned on.
+- Backtests and live trading can differ, and if the exchange responds late or with wrong data, results can be wrong too.
+- BlackClip Guardrail isn't affiliated with or endorsed by Binance, Telegram, or Anthropic.
+
+## License
+
+Source available under FSL-1.1-ALv2. Each version converts to Apache-2.0 two years after its release.

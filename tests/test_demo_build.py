@@ -105,7 +105,9 @@ def test_build_page_set(site):
 
 def test_build_copies_headers(site):
     headers = (site / "dist" / "_headers").read_text(encoding="utf-8")
-    assert ("Content-Security-Policy: default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; "
+    # 스크립트는 Cloudflare가 넣는 방문 비콘만(랜딩과 같은 두 줄). 직접 짠 <script>는 위 시험이 0으로 막음
+    assert ("Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; connect-src 'self'; "
+            "style-src 'self' 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; "
             "form-action 'none'; frame-ancestors 'none'") in headers and "X-Robots-Tag: noindex" in headers
     assert '"directory": "./dist"' in (site / "wrangler.jsonc").read_text(encoding="utf-8")
 
@@ -130,9 +132,10 @@ def test_first_page_has_install_and_demo_link(site):
     assert "uv tool install blackclip-guardrail" in html and "git+https" not in html
     assert ("claude plugin install blackclip-guardrail --marketplace https://github.com/Noah-TaeHwan/blackclip-guardrail.git"
             " --scope project") in html
-    readme = (Path(__file__).resolve().parents[1] / "README.md").read_text(encoding="utf-8")
-    assert "--marketplace Noah-TaeHwan/" not in html + readme  # owner/repo 꼴은 SSH부터 시도해 키 없는 고객이 세션 안 /plugin에서 막힘
-    assert readme.count("--marketplace https://github.com/Noah-TaeHwan/blackclip-guardrail.git") == 2  # 세션 안 · 터미널
+    for name in ("README.md", "README.ko.md"):
+        readme = (Path(__file__).resolve().parents[1] / name).read_text(encoding="utf-8")
+        assert "--marketplace Noah-TaeHwan/" not in html + readme  # owner/repo 꼴은 SSH부터 시도해 키 없는 고객이 세션 안 /plugin에서 막힘
+        assert readme.count("--marketplace https://github.com/Noah-TaeHwan/blackclip-guardrail.git") == 2, name  # 세션 안 · 터미널
     assert 'href="demo/"' in html and "소스 공개(FSL-1.1-ALv2), 각 버전은 나온 지 2년 뒤 Apache-2.0으로 바뀌어요." in html
     assert "오픈소스" not in html and "<title>BlackClip Guardrail</title>" in html
 
@@ -145,9 +148,10 @@ def test_first_page_commands_scroll_instead_of_wrap(site):
 
 
 def test_first_page_install_lines_are_readme_lines():
-    """첫 장 설치 명령 줄마다 README 「설치」 절의 코드 줄과 글자 그대로 같다(README를 바꾸면 첫 장도 같이)."""
-    readme = (Path(__file__).resolve().parents[1] / "README.md").read_text(encoding="utf-8").splitlines()
-    assert [c for c in INSTALL if f"    {c}" not in readme] == []
+    """첫 장 설치 명령 줄마다 영어 · 한국어 README 「설치」 절의 코드 줄과 글자 그대로 같다(README를 바꾸면 첫 장도 같이)."""
+    for name in ("README.md", "README.ko.md"):
+        readme = (Path(__file__).resolve().parents[1] / name).read_text(encoding="utf-8").splitlines()
+        assert [c for c in INSTALL if f"    {c}" not in readme] == [], name
 
 
 @pytest.mark.parametrize("bash", sorted({b for b in (shutil.which("bash"), "/bin/bash") if b and Path(b).exists()}))
