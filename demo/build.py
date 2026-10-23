@@ -40,21 +40,24 @@ def first_page() -> bytes:
     Returns:
         UTF-8 HTML 바이트.
     """
-    does = ("점검: 실전에 넣기 전에 재현성, 미래참조, 거래비용, 시도 수, 국면을 보고 그 전략에 맞는 가드레일(정상 범위와 경고선)을 만들어요.",
-            "지켜보기: 실전에 넣은 뒤에는 조회 전용 키로 체결을 받아 같은 기간 백테스트와 매일 맞춰 보고, 벗어나면 텔레그램으로 알려 줘요.",
+    does = ("봇 지켜보기(키 없이): 돌고 있는 봇이 이미 남기는 기록 파일을 읽어요. 기록이 정한 시간보다 오래 끊기면 텔레그램으로 「봇이 안 보여요」를 보내요.",
+            "점검: 실전에 넣기 전에 재현성, 미래참조, 거래비용, 시도 수, 국면을 보고 그 전략에 맞는 가드레일(정상 범위와 경고선)을 만들어요.",
+            "대조(고를 때만): 실제 계좌와도 맞대 보고 싶으면 조회 전용 키로 체결을 받아 같은 기간 백테스트와 매일 맞춰 보고, 벗어나면 텔레그램으로 알려 줘요.",
             "회고: 이미 봇을 돌리고 있었다면 지난 석 달 체결로 첫 회고 한 장부터 보여 줘요.",
             "로컬: 키, 체결, 전략 코드는 내 맥에만 있어요. 주문은 내지 않고, 경고만 하고 봇을 멈추지도 않아요.")
     cmds = "".join(f'<code class="cmd">{html.escape(c)}</code>' for c in INSTALL)
     body = (f'<div class="head"><h1 class="display">{web.BRAND}</h1></div>\n'
-            '<section class="panel"><p class="empty">AI와 함께 만든 매매 전략을 실돈 넣기 전에 점검하고, 넣은 뒤에는 백테스트대로 가는지 매일 지켜보는 맥용 로컬 도구예요.</p>'
+            '<section class="panel"><p class="empty">AI와 함께 만든 매매 전략으로 봇을 돌리고 있다면, 거래소 키 없이 그 봇이 남기는 기록을 지켜보다가 '
+            '기록이 끊기면 텔레그램으로 깨워 주는 맥용 로컬 도구예요. 실돈 넣기 전 점검과 백테스트 대조도 해요.</p>'
             '<ul class="list">' + "".join(f"<li>{t}</li>" for t in does) + "</ul>"
             '<div class="actions"><a class="btn btn-fill" href="demo/">샘플 대시보드 보기</a>'
             f'<a class="btn btn-quiet" href="{REPO_URL}">GitHub에서 보기</a></div></section>\n'
             '<section class="panel"><h2 class="h2">설치</h2>'
-            '<p class="sub">macOS, uv, Claude Code(전략 연결 파일을 만들 때), 바이낸스 조회 전용 API 키가 필요해요.</p>'
+            '<p class="sub">macOS, uv, Claude Code(봇 기록 어댑터와 전략 연결 파일을 만들 때), 텔레그램이 필요해요. '
+            '바이낸스 조회 전용 API 키는 실제 계좌와 맞대 볼 때만 필요해요.</p>'
             f"{cmds}"
             '<p class="sub">blackclip을 못 찾는다고 나오면 uv tool update-shell을 돌리고 새 터미널을 열어요. '
-            f'처음 30분 순서는 <a class="link" href="{REPO_URL}#readme">README</a>에 있어요.</p></section>\n'
+            f'키 없이 붙이는 처음 10분 순서는 <a class="link" href="{REPO_URL}#readme">README</a>에 있어요.</p></section>\n'
             '<p class="sub">투자 자문이 아니에요. 점검 결과와 경고는 참고용 숫자이고 수익을 보장하지 않아요.</p>'
             '<p class="sub">소스 공개(FSL-1.1-ALv2), 각 버전은 나온 지 2년 뒤 Apache-2.0으로 바뀌어요.</p>')
     return ('<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n'

@@ -227,6 +227,7 @@ def judge(root: Path, agents: Path | None = None, now: datetime | None = None) -
     if odd:
         notes.append(f"이름 모양이 다른 전략 폴더 {len(odd)}개는 안 봄(영문 · 숫자 · _ · - 64자까지)")
     levels = {p: _strategy(root, p) for p in folders if p not in odd}
+    watching = [p.name for p in levels if _regular(p / "follow.json")]  # 키 없이 지켜보는 전략(follow.FOLLOW, 무거운 import 피함)
     best = max(levels, key=lambda p: levels[p][0], default=None)  # 같으면 이름순 첫째(max는 처음 만난 최댓값)
     level, chk = levels[best] if best else (0, None)
     linked_bots = [p for p, (lv, _) in levels.items() if lv >= 1]  # 연결 파일(link.py)이 일반 파일인 전략
@@ -253,7 +254,11 @@ def judge(root: Path, agents: Path | None = None, now: datetime | None = None) -
         - timedelta(days=FIRST_DAYS)
     nxt = {
         "훑기": "blackclip scan . (연 폴더만 실행 없이 훑음, 다른 폴더는 고객이 고를 때만)",
-        "조회 키": "blackclip connect --open (바이낸스에서 「조회」만 켠 API 키를 이 컴퓨터 브라우저에서 넣기)",
+        "조회 키": (f"키 없이 지켜보는 중({', '.join(watching)}) · 실제 계좌와도 맞대 보려면(고를 때만) blackclip connect --open"
+                  if watching else
+                  "돌고 있는 봇이 있으면 키 없이 먼저 붙이기(봇 기록 → 어댑터 → blackclip events <전략> → 선 승인 → "
+                  "blackclip follow <전략> --quiet-minutes <분> → blackclip schedule) · 실제 계좌와도 맞대 보려면 "
+                  "blackclip connect --open (바이낸스에서 「조회」만 켠 API 키를 이 컴퓨터 브라우저에서 넣기)"),
         "체결 기록": (f"blackclip fetch --symbols <봇이 거래하는 종목>(예: BTCUSDT) --since {since.isoformat()} "
                   "(지난 석 달 체결을 받아 체결 기록이 있는지에 따라 다음 길을 정해요)"),
         "전략 연결": ("실전에서 돌리는 전략만 먼저 연결 파일 .blackclip/strategies/<이름>/link.py를 만든다(신호 함수 또는 TRADES 거래 목록)"

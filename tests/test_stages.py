@@ -517,3 +517,17 @@ def test_no_fills_yet_does_not_read_retro_folders(tmp_path, monkeypatch):
     finally:
         (d / "daily").chmod(0o755)
     assert (j["branch"], j["now"]) == (None, "조회 키")
+
+
+def test_key_step_points_to_keyless_first(tmp_path):
+    """조회 키 단계의 다음 할 일: 키 없이 붙이기를 먼저, 선(follow.json)이 있으면 지켜보는 중이라고 하고 키는 고를 때만."""
+    (tmp_path / ".git").mkdir()
+    root = ensure(tmp_path)
+    (root / "map.json").write_text("{}")
+    j = stages.judge(root)
+    assert j["now"] == "조회 키" and j["next"].startswith("돌고 있는 봇이 있으면 키 없이 먼저 붙이기(")
+    assert j["next"].index("blackclip follow") < j["next"].index("blackclip connect --open")
+    s = root / "strategies" / "bot1"
+    s.mkdir(parents=True)
+    (s / "follow.json").write_text('{"quiet_minutes": 90}')
+    assert stages.judge(root)["next"] == "키 없이 지켜보는 중(bot1) · 실제 계좌와도 맞대 보려면(고를 때만) blackclip connect --open"

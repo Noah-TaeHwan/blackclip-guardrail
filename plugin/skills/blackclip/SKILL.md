@@ -29,6 +29,8 @@ description: BlackClip Guardrail 엔진(blackclip 명령)으로 트레이딩 전
 | `blackclip notify` | 알림 설정 보기 · 바꾸기(`--quiet` · `--healthcheck` · `--execution-alerts`) |
 | `blackclip schedule` | 매일 대조 · 자주 보는 시계를 macOS 예약 작업으로 걸기(`--at HH:MM`) · 지우기(`--remove`) |
 | `blackclip daily` · `blackclip watch` | 예약 작업이 부르는 매일 대조 · 자주 보는 시계(고객이 직접 부를 일은 드묾) |
+| `blackclip events <전략>` | 키 없는 감시의 「이벤트 확인」: 봇 로그의 새 줄을 어댑터로 이벤트로 바꿔 쌓고, 들어온 종류 · 빠진 종류 · 형식 오류 · 마지막 이벤트 시각을 보임 |
+| `blackclip follow <전략> --quiet-minutes <분>` | 고객이 승인한 「봇이 안 보여요」 선을 적음(`.blackclip/strategies/<전략>/follow.json`). 전략 없이 `blackclip follow`는 예약 작업이 5분마다 부르는 시계 |
 
 - 「어떻게 돼 가?」 · 「지금 ○○ 어때?」: **`blackclip status <전략>` 한 번으로 답한다**(전략을 모르면 `blackclip status`). 첫 두 줄(결론 · 손익)부터 말하고 원인 · 거래 빈도 · 가드레일 대응이 있으면 이어서 전한다. `.blackclip/` 아래 일별 파일(`daily/*.md`) · `days.jsonl`을 `ls` · `tail` · `cat` · 파이썬으로 직접 읽지 않는다(숫자는 status 출력에 있는 것만 쓴다). 이 질문에 `blackclip connect --status` · `blackclip notify`를 덧붙여 돌리지 않는다(고객이 연결 · 알림을 물을 때만). status가 종료 4면 일부 전략을 확인할 수 없다는 뜻이니 그 줄을 그대로 전하고 나머지는 정상 출력으로 읽는다(`chart` 전체 보기도 같음). 답에 `[출처]` 줄을 쓸 때 근거는 status 출력이라 `days.jsonl`을 열지 않는다. `status <전략>`이 종료 2(오류 한 줄)면 그 줄만 전하고 파일로 대신 읽지 않는다. 끈 전략(중지 · 은퇴 · 기록 손상)이면 status가 끈 전략 줄 하나만 낸다 — 실전처럼 말하지 않고 그 줄(끈 뒤 회고가 있다고 하면 그 파일 위치)을 전한다.
 - 그림이 필요하면 고객에게 **`! blackclip chart <전략>`**(거래 단위는 `! blackclip chart <전략> --trades`, 전략 이름을 모르면 `! blackclip chart`)을 쳐 보라고 알려 준다. **`blackclip chart`를 Bash로 돌리지 않는다**(색 코드가 맥락에 들어간다). 그림을 글로 다시 그리지도 않는다.
@@ -38,6 +40,35 @@ description: BlackClip Guardrail 엔진(blackclip 명령)으로 트레이딩 전
 - 포트가 이미 쓰이고 있으면 종료 2로 한 줄을 낸다. `blackclip connect`는 「같은 레포에서 띄운 대시보드면 그 화면의 「연결」에서 넣습니다(main 계정). 다른 계정 · 테스트넷이거나 다른 프로그램이면 --port <다른 번호>를 붙여 다시 실행합니다.」, `! blackclip dashboard`는 「대시보드가 떠 있으면 그 창을 쓰고, 아니면 --port <다른 번호>로 띄워 주세요.」다. 엔진은 떠 있는 것이 이 레포의 대시보드인지 가리지 않으니(판별 안 함) 그 줄을 고객에게 전하고, 대시보드를 띄워 둔 적이 없다면 `--port <다른 번호>`를 붙여 다시 돌린다.
 - 하위 명령 도움말은 `blackclip <명령> --help`.
 - `blackclip`이 PATH에 없으면(command not found) 사용자 설정 폴더의 엔진 위치 파일 `${XDG_CONFIG_HOME:-~/.config}/blackclip/engine`에 적힌 절대 경로로 부른다(엔진이 스스로 적어 둠). 파일 안이 `/`로 시작하고 `blackclip`으로 끝나는 절대 경로 한 줄일 때만 쓰고, 모양이 다르면 돌리지 않고 고객에게 여쭙는다. 레포 안을 뒤져 다른 `blackclip`을 찾아 돌리지 않는다. 그 파일도 없으면 고객에게 `blackclip --version`이 되는지 확인을 부탁한다.
+
+## 키 없이 붙이기 (봇이 이미 돌고 있을 때 먼저)
+
+고객이 「가드레일 붙여 줘」 · 「봇 지켜봐 줘」처럼 이미 돌고 있는 봇을 말하면 이 순서로 간다. 거래소 키를 묻지 않는다. 봇 코드는 고치지 않는다(읽기만). 조회 키 · 체결 대조(아래 「첫 셋업」의 키 단계)는 고객이 「실제 계좌와도 맞대 보고 싶다」고 할 때만 권한다.
+
+1. **봇과 로그 찾기:** 먼저 `blackclip scan .`을 돌리고 `map.json`의 `bots`(실전 봇 후보)를 고객에게 보여 확인한다. `bots`가 비면(라이브러리 없이 거래소 주소를 직접 부르는 봇은 여기 안 잡힐 수 있음) 고객에게 돌고 있는 봇 파일을 묻는다. 그 봇 코드에서 파일에 덧붙여 쓰는 곳(`open(..., "a")` · `logging.FileHandler` · csv/jsonl 쓰기)을 찾아 봇이 남기는 기록 파일을 고른다. 그 파일의 마지막 몇 줄만 읽어 줄 모양(시각 칸 · 체결 · 포지션 · 잔고가 있는지)을 확인한다. `secrets` · `unchecked`에 적힌 파일은 열지 않는다.
+2. **어댑터 만들기:** `.blackclip/strategies/<전략>/adapter.py`를 만든다(전략 이름은 영문 · 숫자 · _ · - 64자까지). 엔진이 맨 위 `SOURCE`만 실행 없이 읽고, 그 파일의 새 줄을 표준 입력으로 넘겨 하위 프로세스로 돌린다(환경 변수 없음, 키 없음). 계약:
+
+```python
+SOURCE = "logs/bot.jsonl"   # 봇이 이미 쓰는 기록 파일(레포 기준 상대 또는 절대 경로), 맨 위에 문자열 하나
+import json, sys
+for line in sys.stdin:        # 봇 기록 한 줄씩(엔진이 지난번 읽은 자리 뒤의 끝난 줄만 넘김)
+    ...                       # 바꿀 수 있는 줄이면 이벤트 JSON 하나씩 print, 아니면 건너뜀
+```
+
+   이벤트(한 줄에 JSON 하나, `time`은 시간대가 있는 ISO 8601 — 봇 기록의 시각을 그대로 옮기고 지어내지 않는다):
+
+   | `kind` | 꼭 있는 칸 | 있으면 넣는 칸 |
+   | --- | --- | --- |
+   | `heartbeat` | `time` | — (봇이 판단 · 거래를 한 줄마다 하나 — 봇이 살아 있다는 표시) |
+   | `fill` | `time` · `symbol` · `side`(`buy`/`sell`) · `qty` · `price` | `fee` · `fee_asset` · `order_id` |
+   | `position` | `time` · `symbol` · `qty` | `mark_price` |
+   | `equity` | `time` · `value` | `currency` |
+   | `decision` | `time` | `seen_price` · `want` |
+
+   숫자는 봇 기록의 글자 그대로 문자열로 옮긴다. 기록에 없는 칸은 비워 둔다(예: 체결가가 없으면 `fill`을 내지 않는다). 표준 라이브러리만 쓰고, 봇 모듈을 import하거나 네트워크 · 키체인에 닿지 않는다.
+3. **이벤트 확인:** `blackclip events <전략>`을 돌려 출력 줄을 빼지 않고 전한다(들어온 종류 · 형식 오류 · 빠진 종류 · 마지막 이벤트 시각). 형식 오류가 있거나 이벤트가 0이면 봇 기록 줄과 어댑터를 다시 맞춘다.
+4. **선 승인:** 봇이 기록을 남기는 평소 간격을 근거와 함께 말하고(예: 「1시간마다 판단하니 90분이면 멈춘 것으로 봄」) 분을 제안한다. 고객이 「응」 하거나 다른 분을 말하면 그 값으로 `blackclip follow <전략> --quiet-minutes <분>`. 고객이 승인하기 전에는 돌리지 않는다.
+5. **예약 · 알림:** `blackclip schedule`(5분마다 `blackclip follow`가 붙음), 텔레그램이 아직이면 아래 텔레그램 봇 불릿대로 잇는다. 끝나면 「봇 기록이 선보다 오래 끊기면 텔레그램으로 「봇이 안 보여요」가 가요 · Guardrail은 봇을 멈추거나 주문하지 않아요」라고 알린다.
 
 ## 첫 셋업
 
