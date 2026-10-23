@@ -1,7 +1,7 @@
 {
   "name": "blackclip-guardrail",
-  "version": "0.1.0",
-  "description": "AI와 함께 만든 매매 전략을 실돈 넣기 전에 점검하고, 넣은 뒤에는 백테스트대로 가는지 지켜보는 blackclip 엔진의 Claude Code 연결(스킬 하나와 훅 넷, 지켜보기만, macOS)",
+  "version": "0.2.0",
+  "description": "AI와 함께 만든 매매 전략으로 돌리는 봇을 거래소 키 없이 지켜보다가 기록이 끊기면 텔레그램으로 깨우는 blackclip 엔진의 Claude Code 연결(스킬 하나와 훅 넷, 지켜보기만, 실전 전 점검 · 백테스트 대조도, macOS)",
   "author": {
     "name": "Noah TaeHwan Oh"
   },

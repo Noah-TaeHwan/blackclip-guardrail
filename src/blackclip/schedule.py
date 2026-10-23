@@ -33,7 +33,7 @@ def label(repo: Path, kind: str = "daily") -> str:
 
     Args:
         repo: 레포 꼭대기(.blackclip의 부모).
-        kind: "daily" 또는 "watch".
+        kind: "daily" · "watch" · "follow".
 
     Returns:
         "com.blackclip.<kind>.<sha256 앞 10자>".
@@ -161,6 +161,25 @@ def watch_plist(repo: Path, exe: str, minute: int) -> bytes:
                            "StartCalendarInterval": {"Minute": minute}, "StandardOutPath": log, "StandardErrorPath": log})
 
 
+FOLLOW_S = 300
+"""키 없이 지켜보는 시계 간격(초). StartInterval도 잠든 동안 놓친 차례를 깨어날 때 한 번으로 합친다(launchd.plist(5))."""
+
+
+def follow_plist(repo: Path, exe: str) -> bytes:
+    """키 없이 지켜보는 시계 LaunchAgent plist 내용(5분마다).
+
+    Args:
+        repo: 레포 꼭대기.
+        exe: blackclip 절대 경로.
+
+    Returns:
+        XML plist 바이트.
+    """
+    log = str(repo / ".blackclip" / "follow.log")
+    return plistlib.dumps({"Label": label(repo, "follow"), "ProgramArguments": [exe, "follow"], "WorkingDirectory": str(repo),
+                           "StartInterval": FOLLOW_S, "StandardOutPath": log, "StandardErrorPath": log})
+
+
 def _run(argv: list[str]) -> int:
     """명령을 돌리고 종료 코드만.
 
@@ -174,8 +193,12 @@ def _run(argv: list[str]) -> int:
 
 
 def install(repo: Path, hour: int, minute: int, agents: Path | None = None, run: Run = _run,
-            platform: str = sys.platform, exe: str | None = None) -> list[str]:
+            platform: str = sys.platform, exe: str | None = None, follow: bool = False, daily: bool = True) -> list[str]:
     """plist 둘(매일 대조 · 자주 보는 시계)을 쓰고 launchd에 올린다(이미 있으면 내렸다 다시). macOS가 아니면 crontab 줄만.
+
+    follow면 키 없이 지켜보는 시계(5분마다)도 건다. 선(follow.json)이 있는 레포만이라 조회 키만 쓰는 레포는 그대로 둘이다.
+    daily가 False면 둘은 걸지 않는다(선만 있고 저장한 가드레일이 없는 레포: 걸면 돌 때마다 「저장된 전략이 없습니다」로 끝남).
+    전에 건 둘이 있으면 내리고 plist를 지운다(_drop). 내려갔는지 모르면 그 줄로 말하고 종료 코드는 그대로.
 
     Args:
         repo: 레포 꼭대기.
@@ -185,6 +208,8 @@ def install(repo: Path, hour: int, minute: int, agents: Path | None = None, run:
         run: 명령 실행기.
         platform: 운영체제(시험).
         exe: blackclip 경로(시험).
+        follow: 키 없이 지켜보는 시계도 걸지.
+        daily: 매일 대조 · 자주 보는 시계를 걸지.
 
     Returns:
         화면 줄.
@@ -194,30 +219,72 @@ def install(repo: Path, hour: int, minute: int, agents: Path | None = None, run:
     """
     exe = exe or executable()
     wm = watch_minute(minute)
+    kinds = (["daily", "watch"] if daily else []) + (["follow"] if follow else [])
+    later = [] if daily else ["매일 대조 · 자주 보는 시계는 안 걸었어요 · 가드레일을 저장한 전략이 생기면 blackclip schedule을 다시"]
     if platform != "darwin":
-        return [f"이 운영체제는 자동으로 걸지 않아요 · crontab -e에 한 줄: {minute} {hour} * * * cd {repo} && {exe} daily "
-                ">> .blackclip/daily.log 2>&1",
-                f"자주 보는 시계도 걸려면 한 줄 더: {wm} * * * * cd {repo} && {exe} watch >> .blackclip/watch.log 2>&1"]
+        cron = {"daily": f"{minute} {hour} * * * cd {repo} && {exe} daily >> .blackclip/daily.log 2>&1",
+                "watch": f"{wm} * * * * cd {repo} && {exe} watch >> .blackclip/watch.log 2>&1",
+                "follow": f"*/5 * * * * cd {repo} && {exe} follow >> .blackclip/follow.log 2>&1"}
+        what = {"watch": "자주 보는 시계", "follow": "키 없이 지켜보는 시계"}
+        return ([f"이 운영체제는 자동으로 걸지 않아요 · crontab -e에 한 줄: {cron[kinds[0]]}"]
+                + [f"{what[k]}도 걸려면 한 줄 더: {cron[k]}" for k in kinds[1:]] + later
+                + ([] if daily else ["crontab에 이미 넣은 daily · watch 줄이 있으면 지워요"]))
     agents = agents or Path.home() / "Library" / "LaunchAgents"
     agents.mkdir(parents=True, exist_ok=True)
     domain = f"gui/{os.getuid()}"
-    for kind, body in (("daily", plist(repo, exe, hour, minute)), ("watch", watch_plist(repo, exe, wm))):
+    jobs = {"daily": plist(repo, exe, hour, minute), "watch": watch_plist(repo, exe, wm), "follow": follow_plist(repo, exe)}
+    for kind in kinds:
         path = agents / f"{label(repo, kind)}.plist"
         run(["launchctl", "bootout", f"{domain}/{label(repo, kind)}"])  # 없으면 실패해도 된다
-        path.write_bytes(body)
+        path.write_bytes(jobs[kind])
         if run(["launchctl", "bootstrap", domain, str(path)]) != 0:
             raise OSError(f"launchctl bootstrap이 실패했습니다({path.name})")
-    return [f"매일 {hour:02d}:{minute:02d}(이 컴퓨터 시간) blackclip daily를 걸었어요 · 잠들어 있었으면 깨어날 때 한 번 돎",
-            f"매시 {wm:02d}분 blackclip watch를 걸었어요 · 전략별 계좌(--capital 없음)인 전략만 · "
-            "맥이 잠든 동안은 1시간 점검도 멈춤 · 깨어나면 한 번 돎",
-            "로그: .blackclip/daily.log · .blackclip/watch.log · 끄기: blackclip schedule --remove"]
+    for kind, what in () if daily else KINDS:  # 전에 건 둘이 남으면 돌 때마다 「저장된 전략이 없습니다」로 끝남
+        line = _drop(repo, agents, run, kind, what)[1]
+        if line:
+            later.append(line)
+    said = {"daily": f"매일 {hour:02d}:{minute:02d}(이 컴퓨터 시간) blackclip daily를 걸었어요 · 잠들어 있었으면 깨어날 때 한 번 돎",
+            "watch": f"매시 {wm:02d}분 blackclip watch를 걸었어요 · 전략별 계좌(--capital 없음)인 전략만 · "
+                     "맥이 잠든 동안은 1시간 점검도 멈춤 · 깨어나면 한 번 돎",
+            "follow": f"{FOLLOW_S // 60}분마다 blackclip follow를 걸었어요 · 키 없이 지켜보는 전략(선 follow.json이 있는 전략)만 · "
+                      "맥이 잠든 동안은 멈춤 · 깨어나면 한 번 돎"}
+    return ([said[k] for k in kinds] + later
+            + ["로그: " + " · ".join(f".blackclip/{k}.log" for k in kinds) + " · 끄기: blackclip schedule --remove"])
 
 
-def remove(repo: Path, agents: Path | None = None, run: Run = _run) -> tuple[bool, list[str]]:
-    """launchd에서 둘 다 내리고 plist를 지운다. 말은 bootout 종료 코드와 파일 유무가 말해 주는 만큼만 한다.
+def _drop(repo: Path, agents: Path, run: Run, kind: str, what: str) -> tuple[bool, str | None]:
+    """예약 하나를 launchd에서 내리고 plist를 지운다. 말은 bootout 종료 코드와 파일 유무가 말해 주는 만큼만 한다.
 
     bootout 0 = 지움, 3(없는 예약) = launchd에 없음이 확인됨. 그 밖의 종료 코드는 내려갔는지 모르므로 파일을 남기고
     확인 불가로 말한다(다시 --remove하면 같은 길).
+
+    Args:
+        repo: 레포 꼭대기.
+        agents: LaunchAgents 폴더.
+        run: 명령 실행기.
+        kind: 예약 종류(daily · watch · follow).
+        what: 화면에 쓰는 이름.
+
+    Returns:
+        (확인됐는지, 화면 줄). 건 적 없음(종료 3 · 파일 없음)이면 줄은 None.
+    """
+    path = agents / f"{label(repo, kind)}.plist"
+    target = f"gui/{os.getuid()}/{label(repo, kind)}"
+    rc = run(["launchctl", "bootout", target])
+    existed = path.exists()
+    if rc not in (0, NOT_LOADED):
+        return False, f"{what} 예약 확인 불가(종료 {rc}) · 확인: launchctl print {target}"
+    if existed:
+        path.unlink()
+    if rc == 0:
+        return True, f"{what} 예약을 지웠어요"
+    if existed:
+        return True, f"{what} 예약 파일을 지웠어요 · launchd에는 올라가 있지 않았어요(종료 {rc})"
+    return True, None
+
+
+def remove(repo: Path, agents: Path | None = None, run: Run = _run) -> tuple[bool, list[str]]:
+    """launchd에서 예약을 모두 내리고 plist를 지운다(예약마다 _drop).
 
     Args:
         repo: 레포 꼭대기.
@@ -229,21 +296,10 @@ def remove(repo: Path, agents: Path | None = None, run: Run = _run) -> tuple[boo
     """
     agents = agents or Path.home() / "Library" / "LaunchAgents"
     ok, out = True, []
-    for kind, what in KINDS:
-        path = agents / f"{label(repo, kind)}.plist"
-        target = f"gui/{os.getuid()}/{label(repo, kind)}"
-        rc = run(["launchctl", "bootout", target])
-        existed = path.exists()
-        if rc not in (0, NOT_LOADED):
-            ok = False
-            out.append(f"{what} 예약 확인 불가(종료 {rc}) · 확인: launchctl print {target}")
+    for kind, what in KINDS + (("follow", "키 없이 지켜보는 시계"),):
+        if kind == "follow" and not (agents / f"{label(repo, kind)}.plist").exists():  # 건 적 없는 레포(조회 키만)는 0.1.0과 같은 명령 · 두 줄
             continue
-        if existed:
-            path.unlink()
-        if rc == 0:
-            out.append(f"{what} 예약을 지웠어요")
-        elif existed:
-            out.append(f"{what} 예약 파일을 지웠어요 · launchd에는 올라가 있지 않았어요(종료 {rc})")
-        else:
-            out.append(f"걸린 {what} 예약이 없어요")
+        done, line = _drop(repo, agents, run, kind, what)
+        ok = ok and done
+        out.append(line or f"걸린 {what} 예약이 없어요")
     return ok, out

@@ -151,6 +151,12 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("daily", help="매일 대조: 체결 받기 · 같은 기간 백테스트 · 원인 셋 · daily 파일 · 텔레그램(예약 작업이 부름)")
     sub.add_parser("watch", help="자주 보는 시계: 전략별 계좌(--capital 없이 live한 전략)의 가드레일 선 · 봇 멈춤 · 거래 빈도를 "
                                  "1시간마다(예약 작업이 부름)")
+    ev = sub.add_parser("events", help="키 없는 감시: 봇 로그를 어댑터로 이벤트로 바꿔 쌓고, 무엇이 들어오는지 보기(이벤트 확인)")
+    ev.add_argument("strategy", help="전략 이름(.blackclip/strategies/<전략>/adapter.py가 있는 폴더)")
+    fl = sub.add_parser("follow", help="키 없는 감시: 전략 없이 = 지켜보는 시계 한 번(예약 작업이 5분마다 부름), "
+                                       "전략과 --quiet-minutes = 「봇이 안 보여요」 선 승인")
+    fl.add_argument("strategy", nargs="?", help="선을 적을 전략 이름")
+    fl.add_argument("--quiet-minutes", type=int, help="이벤트가 이 분 넘게 없으면 「봇이 안 보여요」(5~10080)")
     scn = sub.add_parser("scan", help="첫 셋업: 연 폴더를 실행 없이 훑어 전략 지도 .blackclip/map.json 만들기(전략 후보 · 실전 봇 · "
                                       "노트북 · 키처럼 보이는 값이 든 파일 · git 커밋 수)")
     scn.add_argument("folder", nargs="?", default=Path("."), type=Path, help="훑을 폴더(기본 지금 폴더, 그 안만 봄)")
@@ -620,8 +626,67 @@ def _run_watch(args: argparse.Namespace) -> int:
     return code
 
 
+def _run_events(args: argparse.Namespace) -> int:
+    """events 하위 명령: 이벤트 확인(봇 로그의 새 줄을 어댑터로 바꿔 쌓고 요약).
+
+    Args:
+        args: 해석한 인자.
+
+    Returns:
+        종료 코드(0, 2 어댑터 · 봇 로그 · 작업 폴더 문제).
+    """
+    from blackclip.events import EventsError, ingest, summary
+
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    try:
+        root = ensure(Path.cwd())
+        with lock(root, "follow"):
+            got = ingest(root, args.strategy, now)
+    except LockBusy as exc:
+        print(f"blackclip events: 지금은 건너뜀({exc})")
+        return 0
+    except (EventsError, WorkspaceError, OSError) as exc:
+        print(f"blackclip events: {exc}", file=sys.stderr)
+        return 2
+    print("\n".join(summary(args.strategy, got, now)))
+    return 0
+
+
+def _run_follow(args: argparse.Namespace) -> int:
+    """follow 하위 명령: 전략과 --quiet-minutes면 선 승인, 아무것도 없으면 지켜보는 시계 한 번(예약 작업이 부름).
+
+    Args:
+        args: 해석한 인자.
+
+    Returns:
+        종료 코드(0 · 2 · 4 · 5, daily와 같은 규칙).
+    """
+    from blackclip.events import EventsError
+    from blackclip.follow import approve, run_follow
+
+    if (args.strategy is None) != (args.quiet_minutes is None):
+        print("blackclip follow: 선을 적으려면 전략과 --quiet-minutes를 함께, 시계를 돌리려면 둘 다 빼고", file=sys.stderr)
+        return 2
+    now = datetime.now(timezone.utc)
+    try:
+        root = ensure(Path.cwd())
+        with lock(root, "follow"):
+            if args.strategy is not None:
+                code, lines = 0, approve(root, args.strategy, args.quiet_minutes, now)
+            else:
+                code, lines = run_follow(root, default_store(), _telegram_bot, now)
+    except LockBusy as exc:
+        print(f"blackclip follow: 이번 확인은 건너뜀({exc}) · 다음 확인에서 다시")
+        return 0
+    except (EventsError, WorkspaceError, KeystoreError, OSError) as exc:
+        print(f"blackclip follow: {exc}", file=sys.stderr)
+        return 2
+    print("\n".join(lines))
+    return code
+
+
 def _run_schedule(args: argparse.Namespace) -> int:
-    """schedule 하위 명령: launchd에 매일 대조 · 자주 보는 시계 걸기 · 지우기.
+    """schedule 하위 명령: launchd에 매일 대조 · 자주 보는 시계(선이 있으면 키 없이 지켜보는 시계도) 걸기 · 지우기.
 
     Args:
         args: 해석한 인자.
@@ -629,11 +694,18 @@ def _run_schedule(args: argparse.Namespace) -> int:
     Returns:
         종료 코드(0, 2 실패 · 지웠는지 확인 못 한 예약이 있음).
     """
+    from blackclip.follow import followed
     from blackclip.schedule import install, remove
 
     try:
-        repo = ensure(Path.cwd()).parent
-        ok, lines = remove(repo) if args.remove else (True, install(repo, *args.at))
+        root = ensure(Path.cwd())
+        repo = root.parent
+        if args.remove:  # 전략 폴더를 읽지 않음: 못 읽어도 예약은 지움
+            ok, lines = remove(repo)
+        else:
+            watching = bool(followed(root))
+            guarded = any(p.is_file() for p in (root / "strategies").glob("*/guardrail.v*.yaml"))  # daily · watch가 볼 것
+            ok, lines = True, install(repo, *args.at, follow=watching, daily=guarded or not watching)
     except (WorkspaceError, OSError, subprocess.TimeoutExpired) as exc:
         print(f"blackclip schedule: {exc}", file=sys.stderr)
         return 2
@@ -969,6 +1041,10 @@ def main(argv: list[str] | None = None) -> int:
         return _run_daily(args)
     if args.command == "watch":
         return _run_watch(args)
+    if args.command == "events":
+        return _run_events(args)
+    if args.command == "follow":
+        return _run_follow(args)
     if args.command == "schedule":
         return _run_schedule(args)
     if args.command == "scan":
